@@ -9,6 +9,45 @@ import Link from "next/link";
 type ChainKey = keyof typeof CHAINS;
 type TokenKey = "USDT" | "USDC";
 
+// 브라우저 감지 유틸리티
+function getBrowserInfo() {
+  if (typeof window === "undefined") return { isChrome: false, isSafari: false, isIOS: false, isAndroid: false };
+
+  const ua = navigator.userAgent;
+  const isIOS = /iPhone|iPad|iPod/i.test(ua);
+  const isAndroid = /Android/i.test(ua);
+
+  // Chrome 감지 (Chrome, CriOS for iOS Chrome)
+  const isChrome = /Chrome/i.test(ua) && !/Edge|Edg|OPR|Opera/i.test(ua) || /CriOS/i.test(ua);
+
+  // Safari 감지 (iOS Safari 또는 macOS Safari)
+  const isSafari = /Safari/i.test(ua) && !/Chrome|CriOS|Chromium/i.test(ua);
+
+  return { isChrome, isSafari, isIOS, isAndroid };
+}
+
+// 크롬으로 강제 오픈
+function openInChrome(url: string) {
+  const { isIOS, isAndroid } = getBrowserInfo();
+
+  if (isAndroid) {
+    // Android Intent → Chrome 앱 강제 실행
+    location.href = `intent://${url.replace("https://", "")}#Intent;scheme=https;package=com.android.chrome;end;`;
+  } else if (isIOS) {
+    // iOS → Chrome 앱 (googlechromes:// for https)
+    location.href = `googlechromes://${url.replace("https://", "")}`;
+  }
+
+  // 리다이렉트 후 뒤로가기 또는 창 닫기
+  setTimeout(() => {
+    if (window.history.length > 1) {
+      history.back();
+    } else {
+      window.close();
+    }
+  }, 1000);
+}
+
 export default function PaymentPage() {
   const params = useParams();
   const shortCode = params.shortCode as string;
@@ -25,9 +64,22 @@ export default function PaymentPage() {
   const [paymentStep, setPaymentStep] = useState<"wallet" | "chain" | "processing" | "success">("wallet");
   const [mounted, setMounted] = useState(false);
 
+  // 크롬/사파리가 아니면 크롬으로 리다이렉트
+  useEffect(() => {
+    const { isChrome, isSafari } = getBrowserInfo();
+
+    // 크롬도 사파리도 아니면 → 크롬으로 강제 오픈
+    if (!isChrome && !isSafari) {
+      openInChrome(window.location.href);
+      return;
+    }
+
+    setMounted(true);
+  }, []);
+
   // 상품 정보 로드
   useEffect(() => {
-    setMounted(true);
+    if (!mounted) return;
 
     async function loadProduct() {
       const result = await getProductByShortCode(shortCode);
@@ -40,7 +92,7 @@ export default function PaymentPage() {
     }
 
     loadProduct();
-  }, [shortCode]);
+  }, [shortCode, mounted]);
 
   // Loading state
   if (loading || !mounted) {
