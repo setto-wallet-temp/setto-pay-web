@@ -7,7 +7,8 @@ export interface Product {
   thumbnail_urls: string[];    // 상단 슬라이드 이미지 (최대 3장)
   detail_urls: string[];       // 상세 이미지 (최대 5장)
   qr_code_url: string;
-  merchant_address: string;
+  merchant_address: string;           // EVM 주소 (0x...)
+  merchant_address_solana: string;    // Solana 주소 (Base58)
   is_active: boolean;
 }
 
@@ -139,6 +140,7 @@ export const mockProducts: Record<string, Product> = {
     ],
     qr_code_url: "",
     merchant_address: "0x6d5d44da188169d2449f7d55f2780bd746bf387f",
+    merchant_address_solana: "5ep7Hvfxpp7VkqDn3bEsCyEzfzy8QradgvYXf5AEB6WW",
     is_active: true
   },
   "B4Y0L3": {
@@ -159,6 +161,7 @@ export const mockProducts: Record<string, Product> = {
     ],
     qr_code_url: "",
     merchant_address: "0x6d5d44da188169d2449f7d55f2780bd746bf387f",
+    merchant_address_solana: "5ep7Hvfxpp7VkqDn3bEsCyEzfzy8QradgvYXf5AEB6WW",
     is_active: true
   },
   "C5Z1M4": {
@@ -181,6 +184,7 @@ export const mockProducts: Record<string, Product> = {
     ],
     qr_code_url: "",
     merchant_address: "0x6d5d44da188169d2449f7d55f2780bd746bf387f",
+    merchant_address_solana: "5ep7Hvfxpp7VkqDn3bEsCyEzfzy8QradgvYXf5AEB6WW",
     is_active: true
   },
   "INFLU1": {
@@ -196,6 +200,7 @@ export const mockProducts: Record<string, Product> = {
     detail_urls: [],
     qr_code_url: "",
     merchant_address: "0x6d5d44da188169d2449f7d55f2780bd746bf387f",
+    merchant_address_solana: "5ep7Hvfxpp7VkqDn3bEsCyEzfzy8QradgvYXf5AEB6WW",
     is_active: true
   }
 };

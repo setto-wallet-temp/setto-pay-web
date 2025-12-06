@@ -82,10 +82,16 @@ export default function PaymentPage() {
 
     setPaymentStep("processing");
 
+    // 체인 타입에 따라 올바른 주소 선택
+    const chainInfo = CHAINS[selectedChain as keyof typeof CHAINS];
+    const recipientAddress = chainInfo.type === "svm"
+      ? product.merchant_address_solana
+      : product.merchant_address;
+
     const uri = generatePaymentUri(
       selectedChain,
       selectedToken,
-      product.merchant_address,
+      recipientAddress,
       product.price,
       `order:${product.short_code}`
     );

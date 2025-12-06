@@ -92,6 +92,7 @@ export async function getProductByShortCode(shortCode: string): Promise<ApiRespo
         detail_urls: data.detail_urls || [],
         qr_code_url: "",
         merchant_address: data.merchant_address,
+        merchant_address_solana: data.merchant_address_solana || "",
         is_active: true,
       },
     };
