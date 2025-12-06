@@ -100,6 +100,7 @@ export const WALLETS: Record<WalletType, {
   id: WalletType;
   name: string;
   icon: string;
+  iconUrl: string;
   supportedChainTypes: ("evm" | "svm")[];
   enabled: boolean;
 }> = {
@@ -107,6 +108,7 @@ export const WALLETS: Record<WalletType, {
     id: "setto",
     name: "Setto Wallet",
     icon: "🔷",
+    iconUrl: "/wallets/setto.svg",
     supportedChainTypes: ["evm", "svm"],
     enabled: false  // 준비중
   },
@@ -114,6 +116,7 @@ export const WALLETS: Record<WalletType, {
     id: "metamask",
     name: "MetaMask",
     icon: "🦊",
+    iconUrl: "/wallets/metamask.svg",
     supportedChainTypes: ["evm"],
     enabled: true
   },
@@ -121,6 +124,7 @@ export const WALLETS: Record<WalletType, {
     id: "trust",
     name: "Trust Wallet",
     icon: "🛡️",
+    iconUrl: "/wallets/trust.svg",
     supportedChainTypes: ["evm", "svm"],  // Solana도 지원
     enabled: true
   },
@@ -128,6 +132,7 @@ export const WALLETS: Record<WalletType, {
     id: "phantom",
     name: "Phantom",
     icon: "👻",
+    iconUrl: "/wallets/phantom.svg",
     supportedChainTypes: ["svm"],
     enabled: true
   }

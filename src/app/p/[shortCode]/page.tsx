@@ -388,18 +388,44 @@ export default function PaymentPage() {
                       key={wallet.id}
                       onClick={() => handleWalletSelect(wallet.id)}
                       disabled={!wallet.enabled}
-                      className={`w-full p-4 rounded-2xl border transition-all flex items-center gap-4 ${
-                        !wallet.enabled
-                          ? "border-white/5 bg-white/5 opacity-50 cursor-not-allowed"
-                          : "border-white/10 bg-white/5 hover:bg-white/10 hover:border-purple-500/50 active:scale-[0.98]"
+                      className={`w-full p-4 rounded-2xl border transition-all flex items-center gap-4 relative overflow-hidden ${
+                        wallet.id === "setto"
+                          ? "border-purple-500/50 bg-gradient-to-r from-purple-900/20 to-blue-900/20 hover:from-purple-900/30 hover:to-blue-900/30"
+                          : !wallet.enabled
+                            ? "border-white/5 bg-white/5 opacity-50 cursor-not-allowed"
+                            : "border-white/10 bg-white/5 hover:bg-white/10 hover:border-purple-500/50 active:scale-[0.98]"
                       }`}
                     >
-                      <span className="text-3xl">{wallet.icon}</span>
+                      {/* Setto 추천 배지 */}
+                      {wallet.id === "setto" && (
+                        <div className="absolute -top-1 -right-1 px-2 py-0.5 bg-gradient-to-r from-purple-500 to-pink-500 text-[9px] font-bold text-white rounded-bl-lg rounded-tr-xl uppercase tracking-wider">
+                          Recommended
+                        </div>
+                      )}
+                      <img
+                        src={wallet.iconUrl}
+                        alt={wallet.name}
+                        className="w-10 h-10 rounded-xl object-contain"
+                      />
                       <div className="flex flex-col items-start flex-1">
                         <span className="font-bold text-white">{wallet.name}</span>
                         <span className="text-xs text-gray-500">
-                          {wallet.id === "phantom" ? "Solana" : wallet.id === "setto" ? "Coming Soon" : "EVM Chains"}
+                          {wallet.id === "phantom" ? "Solana" : wallet.id === "setto" ? "All Chains" : "EVM Chains"}
                         </span>
+                        {/* Setto 차별점 배지들 */}
+                        {wallet.id === "setto" && (
+                          <div className="flex flex-wrap gap-1.5 mt-2">
+                            <span className="px-2 py-0.5 rounded-full bg-green-500/20 border border-green-500/30 text-[10px] text-green-400 font-medium">
+                              Zero Gas Fee
+                            </span>
+                            <span className="px-2 py-0.5 rounded-full bg-yellow-500/20 border border-yellow-500/30 text-[10px] text-yellow-400 font-medium">
+                              Mileage
+                            </span>
+                            <span className="px-2 py-0.5 rounded-full bg-pink-500/20 border border-pink-500/30 text-[10px] text-pink-400 font-medium">
+                              Events
+                            </span>
+                          </div>
+                        )}
                       </div>
                       {!wallet.enabled && (
                         <span className="px-2 py-1 rounded-full bg-gray-800 text-[10px] text-gray-400 uppercase">Soon</span>
