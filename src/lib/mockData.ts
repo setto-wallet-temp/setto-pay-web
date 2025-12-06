@@ -93,7 +93,125 @@ export const TOKENS = [
   { id: "USDC", name: "USDC", icon: "💲", color: "#2775CA" }
 ] as const;
 
-// URI 생성 함수
+// 지갑 정보
+export type WalletType = "setto" | "metamask" | "trust" | "phantom";
+
+export const WALLETS: Record<WalletType, {
+  id: WalletType;
+  name: string;
+  icon: string;
+  supportedChainTypes: ("evm" | "svm")[];
+  enabled: boolean;
+}> = {
+  setto: {
+    id: "setto",
+    name: "Setto Wallet",
+    icon: "🔷",
+    supportedChainTypes: ["evm", "svm"],
+    enabled: false  // 준비중
+  },
+  metamask: {
+    id: "metamask",
+    name: "MetaMask",
+    icon: "🦊",
+    supportedChainTypes: ["evm"],
+    enabled: true
+  },
+  trust: {
+    id: "trust",
+    name: "Trust Wallet",
+    icon: "🛡️",
+    supportedChainTypes: ["evm", "svm"],  // Solana도 지원
+    enabled: true
+  },
+  phantom: {
+    id: "phantom",
+    name: "Phantom",
+    icon: "👻",
+    supportedChainTypes: ["svm"],
+    enabled: true
+  }
+};
+
+// Trust Wallet SLIP44 코드 매핑
+const SLIP44_CODES: Record<string, number> = {
+  bsc: 20000714,
+  base: 8453,        // Base는 EIP-155 chain ID 사용
+  avalanche: 9005,   // Avalanche C-Chain
+  arbitrum: 60,      // Arbitrum은 Ethereum 계열
+  optimism: 60,      // Optimism도 Ethereum 계열
+};
+
+// 지갑별 딥링크 생성 함수
+export function generateWalletDeeplink(
+  wallet: WalletType,
+  chain: keyof typeof CHAINS,
+  token: "USDT" | "USDC",
+  recipient: string,
+  amount: string,
+  memo?: string
+): string {
+  const chainInfo = CHAINS[chain];
+  const tokenAddress = chainInfo.tokens[token];
+  const amountInSmallestUnit = BigInt(
+    Math.floor(parseFloat(amount) * Math.pow(10, chainInfo.decimals))
+  );
+
+  switch (wallet) {
+    case "metamask":
+      // MetaMask Universal Link
+      // https://metamask.app.link/send/{tokenAddress}@{chainId}/transfer?address={to}&uint256={amount}
+      return `https://metamask.app.link/send/${tokenAddress}@${chainInfo.chainId}/transfer?address=${recipient}&uint256=${amountInSmallestUnit}`;
+
+    case "trust":
+      // Trust Wallet Deeplink
+      // https://link.trustwallet.com/send?asset=c{SLIP44}_t{token}&address={to}&amount={amount}&memo={memo}
+      // Solana SLIP44 = 501
+      const slip44 = chainInfo.type === "svm" ? 501 : (SLIP44_CODES[chain] || chainInfo.chainId);
+      let trustUrl = `https://link.trustwallet.com/send?asset=c${slip44}_t${tokenAddress}&address=${recipient}&amount=${amount}`;
+      if (memo) {
+        trustUrl += `&memo=${encodeURIComponent(memo)}`;
+      }
+      return trustUrl;
+
+    case "phantom":
+      // Phantom Deeplink (Solana only)
+      // https://phantom.app/ul/send?recipient={to}&spl-token={token}&amount={amount}&memo={memo}
+      if (chainInfo.type !== "svm") {
+        throw new Error("Phantom only supports Solana");
+      }
+      let phantomUrl = `https://phantom.app/ul/send?recipient=${recipient}&splToken=${tokenAddress}&amount=${amount}`;
+      if (memo) {
+        phantomUrl += `&memo=${encodeURIComponent(memo)}`;
+      }
+      return phantomUrl;
+
+    case "setto":
+      // Setto Wallet (준비중)
+      throw new Error("Setto Wallet is not yet available");
+
+    default:
+      throw new Error(`Unknown wallet: ${wallet}`);
+  }
+}
+
+// 지갑이 특정 체인을 지원하는지 확인
+export function isChainSupportedByWallet(wallet: WalletType, chain: keyof typeof CHAINS): boolean {
+  const walletInfo = WALLETS[wallet];
+  const chainInfo = CHAINS[chain];
+  return walletInfo.supportedChainTypes.includes(chainInfo.type as "evm" | "svm");
+}
+
+// 지갑에서 지원하는 체인 목록 반환
+export function getSupportedChainsForWallet(wallet: WalletType): (keyof typeof CHAINS)[] {
+  const walletInfo = WALLETS[wallet];
+  return (Object.keys(CHAINS) as (keyof typeof CHAINS)[]).filter(chainId => {
+    const chainInfo = CHAINS[chainId];
+    return walletInfo.supportedChainTypes.includes(chainInfo.type as "evm" | "svm");
+  });
+}
+
+// 레거시 URI 생성 함수 (기존 호환성 유지)
 export function generatePaymentUri(
   chain: keyof typeof CHAINS,
   token: "USDT" | "USDC",

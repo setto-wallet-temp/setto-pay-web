@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import { CHAINS, TOKENS, generatePaymentUri, Product } from "@/lib/mockData";
+import { CHAINS, TOKENS, WALLETS, WalletType, generateWalletDeeplink, getSupportedChainsForWallet, Product } from "@/lib/mockData";
 import { getProductByShortCode } from "@/lib/api";
 import Link from "next/link";
 
@@ -19,9 +19,10 @@ export default function PaymentPage() {
   const [error, setError] = useState<string | null>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [selectedWallet, setSelectedWallet] = useState<WalletType | null>(null);
   const [selectedChain, setSelectedChain] = useState<ChainKey | null>(null);
   const [selectedToken, setSelectedToken] = useState<TokenKey | null>(null);
-  const [paymentStep, setPaymentStep] = useState<"select" | "confirm" | "processing" | "success">("select");
+  const [paymentStep, setPaymentStep] = useState<"wallet" | "chain" | "processing" | "success">("wallet");
   const [mounted, setMounted] = useState(false);
 
   // 상품 정보 로드
@@ -68,7 +69,8 @@ export default function PaymentPage() {
 
   const openPaymentModal = () => {
     setShowPaymentModal(true);
-    setPaymentStep("select");
+    setPaymentStep("wallet");
+    setSelectedWallet(null);
     setSelectedChain(null);
     setSelectedToken(null);
   };
@@ -77,35 +79,69 @@ export default function PaymentPage() {
     setShowPaymentModal(false);
   };
 
+  const handleWalletSelect = (wallet: WalletType) => {
+    const walletInfo = WALLETS[wallet];
+    if (!walletInfo.enabled) return;
+
+    setSelectedWallet(wallet);
+
+    // Phantom은 Solana만 지원하므로 자동 선택
+    if (wallet === "phantom") {
+      setSelectedChain("solana");
+    } else {
+      setSelectedChain(null);
+    }
+    setSelectedToken(null);
+    setPaymentStep("chain");
+  };
+
+  const handleBackToWallet = () => {
+    setPaymentStep("wallet");
+    setSelectedWallet(null);
+    setSelectedChain(null);
+    setSelectedToken(null);
+  };
+
   const handlePayment = () => {
-    if (!selectedChain || !selectedToken) return;
+    if (!selectedWallet || !selectedChain || !selectedToken) return;
 
     setPaymentStep("processing");
 
     // 체인 타입에 따라 올바른 주소 선택
-    const chainInfo = CHAINS[selectedChain as keyof typeof CHAINS];
+    const chainInfo = CHAINS[selectedChain as ChainKey];
     const recipientAddress = chainInfo.type === "svm"
       ? product.merchant_address_solana
       : product.merchant_address;
 
-    const uri = generatePaymentUri(
-      selectedChain,
-      selectedToken,
-      recipientAddress,
-      product.price,
-      `order:${product.short_code}`
-    );
+    try {
+      const deeplink = generateWalletDeeplink(
+        selectedWallet,
+        selectedChain,
+        selectedToken,
+        recipientAddress,
+        product.price,
+        `order:${product.short_code}`
+      );
 
-    console.log("Payment URI:", uri);
+      console.log("Wallet Deeplink:", deeplink);
 
-    setTimeout(() => {
-      window.location.href = uri;
-      // Mock success simulation
       setTimeout(() => {
-        setPaymentStep("success");
-      }, 3000);
-    }, 800);
+        window.location.href = deeplink;
+        // Mock success simulation
+        setTimeout(() => {
+          setPaymentStep("success");
+        }, 3000);
+      }, 800);
+    } catch (err) {
+      console.error("Deeplink generation error:", err);
+      setPaymentStep("wallet");
+    }
   };
+
+  // 선택된 지갑에서 지원하는 체인 목록
+  const availableChains = selectedWallet
+    ? getSupportedChainsForWallet(selectedWallet)
+    : [];
 
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-purple-500/30">
@@ -280,10 +316,58 @@ export default function PaymentPage() {
             {/* Decorative top bar */}
             <div className="absolute top-3 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-gray-700 rounded-full sm:hidden" />
 
-            {paymentStep === "select" && (
+            {/* Step 1: Wallet Selection */}
+            {paymentStep === "wallet" && (
               <div className="p-8 flex flex-col h-full">
                 <div className="flex justify-between items-center mb-8 mt-2">
-                  <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">Select Payment</h2>
+                  <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">Select Wallet</h2>
+                  <button onClick={closePaymentModal} className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white transition">✕</button>
+                </div>
+
+                {/* Wallet Selection */}
+                <div className="space-y-3">
+                  {Object.values(WALLETS).map((wallet) => (
+                    <button
+                      key={wallet.id}
+                      onClick={() => handleWalletSelect(wallet.id)}
+                      disabled={!wallet.enabled}
+                      className={`w-full p-4 rounded-2xl border transition-all flex items-center gap-4 ${
+                        !wallet.enabled
+                          ? "border-white/5 bg-white/5 opacity-50 cursor-not-allowed"
+                          : "border-white/10 bg-white/5 hover:bg-white/10 hover:border-purple-500/50 active:scale-[0.98]"
+                      }`}
+                    >
+                      <span className="text-3xl">{wallet.icon}</span>
+                      <div className="flex flex-col items-start flex-1">
+                        <span className="font-bold text-white">{wallet.name}</span>
+                        <span className="text-xs text-gray-500">
+                          {wallet.id === "phantom" ? "Solana" : wallet.id === "setto" ? "Coming Soon" : "EVM Chains"}
+                        </span>
+                      </div>
+                      {!wallet.enabled && (
+                        <span className="px-2 py-1 rounded-full bg-gray-800 text-[10px] text-gray-400 uppercase">Soon</span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Step 2: Chain & Token Selection */}
+            {paymentStep === "chain" && (
+              <div className="p-8 flex flex-col h-full">
+                <div className="flex justify-between items-center mb-6 mt-2">
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={handleBackToWallet}
+                      className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white transition"
+                    >
+                      ←
+                    </button>
+                    <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
+                      {selectedWallet ? WALLETS[selectedWallet as WalletType].name : ""}
+                    </h2>
+                  </div>
                   <button onClick={closePaymentModal} className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white transition">✕</button>
                 </div>
 
@@ -291,19 +375,22 @@ export default function PaymentPage() {
                 <div className="mb-6">
                   <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4 block">Select Network</label>
                   <div className="grid grid-cols-3 gap-3">
-                    {Object.values(CHAINS).map((chain) => (
-                      <button
-                        key={chain.id}
-                        onClick={() => setSelectedChain(chain.id as ChainKey)}
-                        className={`group relative p-3 rounded-2xl border transition-all duration-300 flex flex-col items-center gap-2 overflow-hidden ${selectedChain === chain.id
-                          ? "border-purple-500 bg-purple-500/10 shadow-[0_0_20px_-5px_rgba(168,85,247,0.4)]"
-                          : "border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20"
-                          }`}
-                      >
-                        <span className="text-2xl relative z-10 filter drop-shadow-lg group-hover:scale-110 transition">{chain.icon}</span>
-                        <span className={`text-[10px] font-medium tracking-wide uppercase ${selectedChain === chain.id ? "text-purple-300" : "text-gray-400"}`}>{chain.name}</span>
-                      </button>
-                    ))}
+                    {availableChains.map((chainId) => {
+                      const chain = CHAINS[chainId];
+                      return (
+                        <button
+                          key={chain.id}
+                          onClick={() => setSelectedChain(chain.id as ChainKey)}
+                          className={`group relative p-3 rounded-2xl border transition-all duration-300 flex flex-col items-center gap-2 overflow-hidden ${selectedChain === chain.id
+                            ? "border-purple-500 bg-purple-500/10 shadow-[0_0_20px_-5px_rgba(168,85,247,0.4)]"
+                            : "border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20"
+                            }`}
+                        >
+                          <span className="text-2xl relative z-10 filter drop-shadow-lg group-hover:scale-110 transition">{chain.icon}</span>
+                          <span className={`text-[10px] font-medium tracking-wide uppercase ${selectedChain === chain.id ? "text-purple-300" : "text-gray-400"}`}>{chain.name}</span>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
