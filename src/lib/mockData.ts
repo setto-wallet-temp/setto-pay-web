@@ -138,7 +138,7 @@ export const mockProducts: Record<string, Product> = {
       "https://picsum.photos/seed/detail1c/800/1200"
     ],
     qr_code_url: "",
-    merchant_address: "0x1234567890abcdef1234567890abcdef12345678",
+    merchant_address: "0x6d5d44da188169d2449f7d55f2780bd746bf387f",
     is_active: true
   },
   "B4Y0L3": {
@@ -158,7 +158,7 @@ export const mockProducts: Record<string, Product> = {
       "https://picsum.photos/seed/detail2d/800/1200"
     ],
     qr_code_url: "",
-    merchant_address: "0xabcdef1234567890abcdef1234567890abcdef12",
+    merchant_address: "0x6d5d44da188169d2449f7d55f2780bd746bf387f",
     is_active: true
   },
   "C5Z1M4": {
@@ -180,7 +180,7 @@ export const mockProducts: Record<string, Product> = {
       "https://picsum.photos/seed/detail3e/800/1200"
     ],
     qr_code_url: "",
-    merchant_address: "0x9876543210fedcba9876543210fedcba98765432",
+    merchant_address: "0x6d5d44da188169d2449f7d55f2780bd746bf387f",
     is_active: true
   },
   "INFLU1": {
@@ -195,7 +195,7 @@ export const mockProducts: Record<string, Product> = {
     ],
     detail_urls: [],
     qr_code_url: "",
-    merchant_address: "0xCreatorWalletAddress123456",
+    merchant_address: "0x6d5d44da188169d2449f7d55f2780bd746bf387f",
     is_active: true
   }
 };
