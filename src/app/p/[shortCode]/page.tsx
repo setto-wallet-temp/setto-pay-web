@@ -125,13 +125,18 @@ export default function PaymentPage() {
 
       console.log("Wallet Deeplink:", deeplink);
 
+      // 딥링크를 a 태그로 열기 (브라우저 보안 정책 우회)
+      const link = document.createElement('a');
+      link.href = deeplink;
+      link.rel = 'noopener noreferrer';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Mock success simulation
       setTimeout(() => {
-        window.location.href = deeplink;
-        // Mock success simulation
-        setTimeout(() => {
-          setPaymentStep("success");
-        }, 3000);
-      }, 800);
+        setPaymentStep("success");
+      }, 3000);
     } catch (err) {
       console.error("Deeplink generation error:", err);
       setPaymentStep("wallet");
