@@ -175,12 +175,12 @@ export function generateWalletDeeplink(
       return trustUrl;
 
     case "phantom":
-      // Phantom Deeplink (Solana only)
-      // https://phantom.app/ul/send?recipient={to}&spl-token={token}&amount={amount}&memo={memo}
+      // Phantom - Solana Pay URL (Phantom 앱에서 직접 인식)
+      // solana:<recipient>?amount=<amount>&spl-token=<token_mint>&memo=<memo>
       if (chainInfo.type !== "svm") {
         throw new Error("Phantom only supports Solana");
       }
-      let phantomUrl = `https://phantom.app/ul/send?recipient=${recipient}&splToken=${tokenAddress}&amount=${amount}`;
+      let phantomUrl = `solana:${recipient}?amount=${amount}&spl-token=${tokenAddress}`;
       if (memo) {
         phantomUrl += `&memo=${encodeURIComponent(memo)}`;
       }
