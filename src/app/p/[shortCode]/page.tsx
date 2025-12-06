@@ -398,7 +398,7 @@ export default function PaymentPage() {
                     >
                       {/* Setto 추천 배지 */}
                       {wallet.id === "setto" && (
-                        <div className="absolute -top-1 -right-1 px-2 py-0.5 bg-gradient-to-r from-purple-500 to-pink-500 text-[9px] font-bold text-white rounded-bl-lg rounded-tr-xl uppercase tracking-wider">
+                        <div className="absolute top-1 right-1 px-2.5 py-1 bg-gradient-to-r from-purple-500 to-pink-500 text-[10px] font-bold text-white rounded-lg uppercase tracking-wider shadow-lg">
                           Recommended
                         </div>
                       )}
@@ -420,9 +420,6 @@ export default function PaymentPage() {
                             </span>
                             <span className="px-2 py-0.5 rounded-full bg-yellow-500/20 border border-yellow-500/30 text-[10px] text-yellow-400 font-medium">
                               Mileage
-                            </span>
-                            <span className="px-2 py-0.5 rounded-full bg-pink-500/20 border border-pink-500/30 text-[10px] text-pink-400 font-medium">
-                              Events
                             </span>
                           </div>
                         )}
