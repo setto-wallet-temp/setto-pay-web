@@ -86,17 +86,14 @@ export default function ProductDetailPage() {
       <div className="relative z-10 max-w-md mx-auto min-h-screen flex flex-col">
 
         {/* Header / Nav */}
-        <header className="p-6 flex items-center justify-between">
+        <header className="px-6 pt-6 pb-2 flex items-center justify-between">
           <Link href="/" className="text-xl font-black tracking-tighter italic bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
             Setto.
           </Link>
-          <div className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-gray-400 backdrop-blur-md">
-            Verified Creator
-          </div>
         </header>
 
         {/* Main Content Area */}
-        <main className="flex-1 flex flex-col p-6 pb-32">
+        <main className="flex-1 flex flex-col px-6 pt-2 pb-32">
 
           {/* Top Image Carousel */}
           <ImageCarousel images={product.thumbnail_urls} productName={product.name}>

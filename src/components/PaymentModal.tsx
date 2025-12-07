@@ -325,12 +325,13 @@ function ChainTokenSelectionStep({
                   : "border-white/5 bg-white/5 hover:bg-white/10"
               }`}
             >
-              <div
-                className="w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold shadow-inner"
-                style={{ backgroundColor: token.color, color: "white" }}
-              >
-                {token.id === "USDT" ? "T" : "C"}
-              </div>
+              <Image
+                src={token.iconUrl}
+                alt={token.name}
+                width={40}
+                height={40}
+                className="rounded-full"
+              />
               <div className="flex flex-col items-start">
                 <span className="font-bold text-white">{token.name}</span>
                 <span className="text-xs text-gray-500">Stablecoin</span>

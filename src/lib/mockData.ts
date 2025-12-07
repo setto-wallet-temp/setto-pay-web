@@ -265,21 +265,17 @@ export const mockMerchants: Record<string, Merchant> = {
   "SHOP01": {
     merchant_id: "01MERCHANT0001",
     short_code: "SHOP01",
-    name: "테스트 스토어",
-    logo_url: "https://picsum.photos/seed/logo1/200/200",
-    description: "다양한 디지털 상품을 판매하는 테스트 스토어입니다.",
+    name: "cửa hàng thử nghiệm",
+    logo_url: "https://cdn.vectorstock.com/i/1000v/14/07/stylish-woman-biting-lip-vector-20641407.jpg",
+    description: `그동안 SNS에서 보여드리지 못했던 조금 더 대담하고 섬세한 무드의 섹시 컨셉 화보를 담았어요!
+
+사진 한 장 한 장에 제 스타일과 분위기를 가득 채웠고, 고화질로 감상하실 수 있도록 준비했습니다.
+
+후원해주시는 모든 분들께 더 많은 매력과 새로운 모습 보여드릴게요.`,
     fee_rate: "2.5",
     status: "active"
   },
-  "CREATOR": {
-    merchant_id: "01MERCHANT0002",
-    short_code: "CREATOR",
-    name: "Global Hope Foundation",
-    logo_url: "https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?q=80&w=200&auto=format&fit=crop",
-    description: "International non-profit organization dedicated to saving children's lives and defending their rights.",
-    fee_rate: "0.0",
-    status: "active"
-  }
+
 };
 
 // ==================== Mock Products ====================
@@ -339,7 +335,7 @@ export const mockProducts: Record<string, Product> = {
   "INFLU1": {
     product_id: "DONATION_001",
     short_code: "INFLU1",
-    merchant_id: "01MERCHANT0002",
+    merchant_id: "01MERCHANT0001",
     name: "Emergency Relief Kit",
     tag: "NEW",
     price: "0.01",
