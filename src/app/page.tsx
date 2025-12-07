@@ -9,6 +9,7 @@ export default function Home() {
       case "HOT": return "bg-pink-600/90 border-pink-500/30";
       case "NEW": return "bg-blue-600/90 border-blue-500/30";
       case "RECOMMEND": return "bg-orange-500/90 border-orange-500/30";
+      case "NONE": return "bg-gray-600/90 border-gray-500/30";
       default: return "bg-gray-600/90 border-gray-500/30";
     }
   };
