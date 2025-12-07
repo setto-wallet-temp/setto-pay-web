@@ -10,6 +10,7 @@ export interface Product {
   merchant_address: string;           // EVM 주소 (0x...)
   merchant_address_solana: string;    // Solana 주소 (Base58)
   is_active: boolean;
+  tag?: "HOT" | "NEW" | "RECOMMEND";
 }
 
 // 체인 정보
@@ -248,7 +249,8 @@ export const mockProducts: Record<string, Product> = {
   "A3X9K2": {
     product_id: "01HXYZ9ABC123DEF456",
     short_code: "A3X9K2",
-    name: "✨Godsehee First Maxim Cover",
+    name: "Godsehee First Maxim Cover",
+    tag: "HOT",
     price: "0.01",
     description: "Support Godsehee's first Maxim cover! This special sponsorship package helps Godsehee create more amazing content. You will get access to exclusive behind-the-scenes digital photos.",
     thumbnail_urls: [
@@ -269,6 +271,7 @@ export const mockProducts: Record<string, Product> = {
     product_id: "01HXYZ9ABC123DEF457",
     short_code: "B4Y0L3",
     name: "Delicious Taco Set",
+    tag: "RECOMMEND",
     price: "0.01",
     description: "Authentic Mexican Tacos with fresh ingredients. Best tacos in town provided by Setto Catering.",
     thumbnail_urls: [
@@ -284,6 +287,7 @@ export const mockProducts: Record<string, Product> = {
     product_id: "01HXYZ9ABC123DEF458",
     short_code: "C5Z1M4",
     name: "Waifu Collectors Pack",
+    tag: "HOT",
     price: "0.01",
     description: "Start your collection with 3 Super Rare character cards! Includes exclusive 'Flame Knight', 'Aqua Mage', and 'Wind Archer'. Perfect for new players.",
     thumbnail_urls: [
@@ -303,6 +307,7 @@ export const mockProducts: Record<string, Product> = {
     product_id: "INFLUENCER_SPONSOR_001",
     short_code: "INFLU1",
     name: "Creator Support Visual",
+    tag: "NEW",
     price: "0.01",
     description: "Support your favorite creator directly with crypto. 100% of the proceeds go to better content creation.",
     thumbnail_urls: [
