@@ -17,7 +17,7 @@ export default function Home() {
           href="/p/A3X9K2"
           className="block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
         >
-          테스트 상품 1 - $10.00
+          Godsehee Maxim Support - $10.00
         </Link>
         <Link
           href="/p/B4Y0L3"
@@ -32,6 +32,6 @@ export default function Home() {
           테스트 상품 3 - $99.99
         </Link>
       </div>
-    </div>
+    </div >
   );
 }

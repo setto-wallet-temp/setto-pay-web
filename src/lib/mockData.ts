@@ -248,18 +248,17 @@ export const mockProducts: Record<string, Product> = {
   "A3X9K2": {
     product_id: "01HXYZ9ABC123DEF456",
     short_code: "A3X9K2",
-    name: "프리미엄 디지털 아트 NFT",
+    name: "Godsehee First Maxim Cover",
     price: "10.00",
-    description: "한정판 디지털 아트워크입니다. 크로스체인 스테이블코인으로 결제하세요. 전 세계 어디서나 USDT, USDC로 간편하게 구매 가능합니다.",
+    description: "Support Godsehee's first Maxim cover! This special sponsorship package helps Godsehee create more amazing content. You will get access to exclusive behind-the-scenes digital photos.",
     thumbnail_urls: [
-      "https://picsum.photos/seed/product1a/800/800",
-      "https://picsum.photos/seed/product1b/800/800",
-      "https://picsum.photos/seed/product1c/800/800"
+      "https://cdnweb01.wikitree.co.kr/webdata/editor/202412/26/img_20241226151254_83efb0ee.webp"
     ],
     detail_urls: [
-      "https://picsum.photos/seed/detail1a/800/1200",
-      "https://picsum.photos/seed/detail1b/800/1200",
-      "https://picsum.photos/seed/detail1c/800/1200"
+      "https://i.namu.wiki/i/BQU9qkDlYIqpewaRQ_LxosDbFOJCO4iTjB_mCEP7QXJ3fgvlap1HYRFA_KciRCvPpHXJ7V9WqAbYATYnOaJwK1mSYBFPZR3mtBC2iV70tHFV_uMe6_CqQWH6qIdXFX7-9otC8WOVkPZzepScAM8adw.webp",
+      "/images/godsehee/detail-1.jpg",
+      "/images/godsehee/detail-v2-2.jpg",
+      "https://image.fomos.kr/contents/images/board/2025/1201/1764551354176542.jpg"
     ],
     qr_code_url: "",
     merchant_address: "0x6d5d44da188169d2449f7d55f2780bd746bf387f",
@@ -270,7 +269,7 @@ export const mockProducts: Record<string, Product> = {
     product_id: "01HXYZ9ABC123DEF457",
     short_code: "B4Y0L3",
     name: "게임 아이템 패키지",
-    price: "25.00",
+    price: "0.01",
     description: "스페셜 게임 아이템 패키지입니다. 레어 스킨, 무기, 부스터가 포함되어 있습니다. USDT 또는 USDC로 결제 가능합니다.",
     thumbnail_urls: [
       "https://picsum.photos/seed/product2a/800/800",
@@ -291,7 +290,7 @@ export const mockProducts: Record<string, Product> = {
     product_id: "01HXYZ9ABC123DEF458",
     short_code: "C5Z1M4",
     name: "프리미엄 연간 구독권",
-    price: "99.99",
+    price: "0.01",
     description: "프리미엄 서비스 연간 구독권입니다. 모든 기능 무제한 이용, 우선 고객 지원, 독점 콘텐츠 접근 권한이 포함됩니다. 6개 체인에서 결제 가능합니다.",
     thumbnail_urls: [
       "https://picsum.photos/seed/product3a/800/800",
