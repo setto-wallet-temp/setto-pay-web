@@ -285,10 +285,10 @@ export const mockMerchants: Record<string, Merchant> = {
   "CREATOR": {
     merchant_id: "01MERCHANT0002",
     short_code: "CREATOR",
-    name: "Creator Shop",
-    logo_url: "https://picsum.photos/seed/logo2/200/200",
-    description: "Support your favorite creators with crypto payments.",
-    fee_rate: "2.5",
+    name: "Global Hope Foundation",
+    logo_url: "https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?q=80&w=200&auto=format&fit=crop",
+    description: "International non-profit organization dedicated to saving children's lives and defending their rights.",
+    fee_rate: "0.0",
     status: "active"
   }
 };
@@ -348,16 +348,16 @@ export const mockProducts: Record<string, Product> = {
     status: "active"
   },
   "INFLU1": {
-    product_id: "INFLUENCER_SPONSOR_001",
+    product_id: "DONATION_001",
     short_code: "INFLU1",
     merchant_id: "01MERCHANT0002",
-    name: "Creator Support Visual",
+    name: "Emergency Relief Kit",
     tag: "NEW",
     price: "0.01",
-    description: "Support your favorite creator directly with crypto. 100% of the proceeds go to better content creation.",
+    description: "Your donation provides thermal blankets, therapeutic food, and clean water to children in crisis zones. Help us save lives.",
     thumbnail_urls: [
-      "https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?q=80&w=2070&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1492633423870-43d1cd2775eb?q=80&w=2070&auto=format&fit=crop"
+      "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=2070&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1509099836639-18ba1795216d?q=80&w=2069&auto=format&fit=crop"
     ],
     detail_urls: [],
     status: "active"
