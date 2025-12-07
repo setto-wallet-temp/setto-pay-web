@@ -248,8 +248,8 @@ export const mockProducts: Record<string, Product> = {
   "A3X9K2": {
     product_id: "01HXYZ9ABC123DEF456",
     short_code: "A3X9K2",
-    name: "Godsehee First Maxim Cover",
-    price: "10.00",
+    name: "✨Godsehee First Maxim Cover",
+    price: "0.01",
     description: "Support Godsehee's first Maxim cover! This special sponsorship package helps Godsehee create more amazing content. You will get access to exclusive behind-the-scenes digital photos.",
     thumbnail_urls: [
       "https://cdnweb01.wikitree.co.kr/webdata/editor/202412/26/img_20241226151254_83efb0ee.webp"
@@ -268,19 +268,13 @@ export const mockProducts: Record<string, Product> = {
   "B4Y0L3": {
     product_id: "01HXYZ9ABC123DEF457",
     short_code: "B4Y0L3",
-    name: "게임 아이템 패키지",
+    name: "Delicious Taco Set",
     price: "0.01",
-    description: "스페셜 게임 아이템 패키지입니다. 레어 스킨, 무기, 부스터가 포함되어 있습니다. USDT 또는 USDC로 결제 가능합니다.",
+    description: "Authentic Mexican Tacos with fresh ingredients. Best tacos in town provided by Setto Catering.",
     thumbnail_urls: [
-      "https://picsum.photos/seed/product2a/800/800",
-      "https://picsum.photos/seed/product2b/800/800"
+      "https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?q=80&w=2070&auto=format&fit=crop"
     ],
-    detail_urls: [
-      "https://picsum.photos/seed/detail2a/800/1200",
-      "https://picsum.photos/seed/detail2b/800/1200",
-      "https://picsum.photos/seed/detail2c/800/1200",
-      "https://picsum.photos/seed/detail2d/800/1200"
-    ],
+    detail_urls: [],
     qr_code_url: "",
     merchant_address: "0x6d5d44da188169d2449f7d55f2780bd746bf387f",
     merchant_address_solana: "5ep7Hvfxpp7VkqDn3bEsCyEzfzy8QradgvYXf5AEB6WW",
@@ -289,20 +283,16 @@ export const mockProducts: Record<string, Product> = {
   "C5Z1M4": {
     product_id: "01HXYZ9ABC123DEF458",
     short_code: "C5Z1M4",
-    name: "프리미엄 연간 구독권",
+    name: "Waifu Collectors Pack",
     price: "0.01",
-    description: "프리미엄 서비스 연간 구독권입니다. 모든 기능 무제한 이용, 우선 고객 지원, 독점 콘텐츠 접근 권한이 포함됩니다. 6개 체인에서 결제 가능합니다.",
+    description: "Start your collection with 3 Super Rare character cards! Includes exclusive 'Flame Knight', 'Aqua Mage', and 'Wind Archer'. Perfect for new players.",
     thumbnail_urls: [
-      "https://picsum.photos/seed/product3a/800/800",
-      "https://picsum.photos/seed/product3b/800/800",
-      "https://picsum.photos/seed/product3c/800/800"
+      "/images/ccg/card-1.png",
+      "/images/ccg/card-2.png",
+      "/images/ccg/card-3.png"
     ],
     detail_urls: [
-      "https://picsum.photos/seed/detail3a/800/1200",
-      "https://picsum.photos/seed/detail3b/800/1200",
-      "https://picsum.photos/seed/detail3c/800/1200",
-      "https://picsum.photos/seed/detail3d/800/1200",
-      "https://picsum.photos/seed/detail3e/800/1200"
+      "/images/ccg/promo.png"
     ],
     qr_code_url: "",
     merchant_address: "0x6d5d44da188169d2449f7d55f2780bd746bf387f",
@@ -312,7 +302,7 @@ export const mockProducts: Record<string, Product> = {
   "INFLU1": {
     product_id: "INFLUENCER_SPONSOR_001",
     short_code: "INFLU1",
-    name: "✨ Creator Support Visual",
+    name: "Creator Support Visual",
     price: "0.01",
     description: "Support your favorite creator directly with crypto. 100% of the proceeds go to better content creation.",
     thumbnail_urls: [

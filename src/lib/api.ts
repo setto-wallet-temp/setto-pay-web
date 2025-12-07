@@ -151,7 +151,7 @@ export async function getPaymentInfo(
       data: {
         order_id: `mock_order_${Date.now()}`,
         to_address: "0xPoolWalletAddress1234567890abcdef12345678",
-        amount: "10.00",
+        amount: "1.00",
         signature: "mock_signature_" + Date.now(),
         expires_at: Date.now() + 15 * 60 * 1000, // 15분 후 만료
         chain: chain,
