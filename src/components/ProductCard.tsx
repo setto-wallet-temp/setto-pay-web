@@ -54,7 +54,7 @@ export default function ProductCard({ product, merchantName = "", merchantLogoUr
     <Link
       href={`/p/${product.short_code}`}
       onClick={handleClick}
-      className="relative aspect-[4/5] group overflow-hidden bg-gray-900 rounded-xl"
+      className="relative aspect-[4/5] group overflow-hidden bg-gray-900 rounded-lg"
     >
       {/* Background Image */}
       <div
@@ -67,8 +67,8 @@ export default function ProductCard({ product, merchantName = "", merchantLogoUr
 
       {/* Top Left Badge */}
       {product.tag && product.tag !== "NONE" && (
-        <div className="absolute top-2 left-2">
-          <span className={`px-2 py-1 rounded-sm backdrop-blur-sm text-white text-[10px] font-bold tracking-wide shadow-lg border ${getBadgeColor(product.tag)}`}>
+        <div className="absolute -top-px -left-0.3 z-10">
+          <span className={`px-3 py-1.5 rounded-br-lg backdrop-blur-md text-white text-[10px] font-bold tracking-wide shadow-lg border-b border-r ${getBadgeColor(product.tag)}`}>
             {product.tag}
           </span>
         </div>
