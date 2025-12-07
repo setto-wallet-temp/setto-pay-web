@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { CHAINS, TOKENS, WALLETS, WalletType, generateWalletDeeplink, getSupportedChainsForWallet } from "@/lib/mockData";
 
 type ChainKey = keyof typeof CHAINS;
@@ -288,9 +289,13 @@ function ChainTokenSelectionStep({
                     : "border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20"
                 }`}
               >
-                <span className="text-2xl relative z-10 filter drop-shadow-lg group-hover:scale-110 transition">
-                  {chain.icon}
-                </span>
+                <Image
+                  src={chain.iconUrl}
+                  alt={chain.name}
+                  width={28}
+                  height={28}
+                  className="relative z-10 filter drop-shadow-lg group-hover:scale-110 transition"
+                />
                 <span
                   className={`text-[10px] font-medium tracking-wide uppercase ${
                     selectedChain === chain.id ? "text-purple-300" : "text-gray-400"
