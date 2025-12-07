@@ -9,60 +9,6 @@ import Link from "next/link";
 type ChainKey = keyof typeof CHAINS;
 type TokenKey = "USDT" | "USDC";
 
-// 브라우저 감지 유틸리티
-function getBrowserInfo() {
-  if (typeof window === "undefined") return {
-    isChrome: false,
-    isSafari: false,
-    isIOS: false,
-    isAndroid: false,
-    isInAppBrowser: false
-  };
-
-  const ua = navigator.userAgent;
-  const isIOS = /iPhone|iPad|iPod/i.test(ua);
-  const isAndroid = /Android/i.test(ua);
-
-  // 인앱 브라우저 감지 (카카오톡, 네이버, 인스타그램, 페이스북 등)
-  const isInAppBrowser =
-    /KAKAOTALK/i.test(ua) ||      // 카카오톡
-    /NAVER/i.test(ua) ||           // 네이버
-    /Instagram/i.test(ua) ||       // 인스타그램
-    /FBAN|FBAV/i.test(ua) ||       // 페이스북
-    /Line/i.test(ua) ||            // 라인
-    /whale/i.test(ua);             // 네이버 웨일
-
-  // Chrome 감지 (Chrome, CriOS for iOS Chrome) - 단, 인앱 브라우저는 제외
-  const isChrome = !isInAppBrowser && (/Chrome/i.test(ua) && !/Edge|Edg|OPR|Opera/i.test(ua) || /CriOS/i.test(ua));
-
-  // Safari 감지 (iOS Safari 또는 macOS Safari) - 단, 인앱 브라우저는 제외
-  const isSafari = !isInAppBrowser && /Safari/i.test(ua) && !/Chrome|CriOS|Chromium/i.test(ua);
-
-  return { isChrome, isSafari, isIOS, isAndroid, isInAppBrowser };
-}
-
-// 크롬으로 강제 오픈
-function openInChrome(url: string) {
-  const { isIOS, isAndroid } = getBrowserInfo();
-
-  if (isAndroid) {
-    // Android Intent → Chrome 앱 강제 실행
-    location.href = `intent://${url.replace("https://", "")}#Intent;scheme=https;package=com.android.chrome;end;`;
-  } else if (isIOS) {
-    // iOS → Chrome 앱 (googlechromes:// for https)
-    location.href = `googlechromes://${url.replace("https://", "")}`;
-  }
-
-  // 리다이렉트 후 뒤로가기 또는 창 닫기
-  setTimeout(() => {
-    if (window.history.length > 1) {
-      history.back();
-    } else {
-      window.close();
-    }
-  }, 1000);
-}
-
 export default function PaymentPage() {
   const params = useParams();
   const shortCode = params.shortCode as string;
@@ -79,22 +25,9 @@ export default function PaymentPage() {
   const [paymentStep, setPaymentStep] = useState<"wallet" | "chain" | "processing" | "success">("wallet");
   const [mounted, setMounted] = useState(false);
 
-  // 인앱 브라우저면 외부 브라우저(크롬)로 리다이렉트
-  useEffect(() => {
-    const { isChrome, isSafari, isInAppBrowser } = getBrowserInfo();
-
-    // 인앱 브라우저이거나, 크롬/사파리가 아니면 → 크롬으로 강제 오픈
-    if (isInAppBrowser || (!isChrome && !isSafari)) {
-      openInChrome(window.location.href);
-      return;
-    }
-
-    setMounted(true);
-  }, []);
-
   // 상품 정보 로드
   useEffect(() => {
-    if (!mounted) return;
+    setMounted(true);
 
     async function loadProduct() {
       const result = await getProductByShortCode(shortCode);
@@ -107,7 +40,7 @@ export default function PaymentPage() {
     }
 
     loadProduct();
-  }, [shortCode, mounted]);
+  }, [shortCode]);
 
   // Loading state
   if (loading || !mounted) {
