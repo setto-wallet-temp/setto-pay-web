@@ -1,17 +1,43 @@
+// ==================== Types ====================
+
+export interface Merchant {
+  merchant_id: string;
+  short_code: string;
+  name: string;
+  logo_url: string;
+  description: string;
+  fee_rate: string;
+  status: "active" | "suspended";
+}
+
 export interface Product {
   product_id: string;
   short_code: string;
+  merchant_id: string;
   name: string;
   price: string;
   description: string;
-  thumbnail_urls: string[];    // 상단 슬라이드 이미지 (최대 3장)
-  detail_urls: string[];       // 상세 이미지 (최대 5장)
-  qr_code_url: string;
-  merchant_address: string;           // EVM 주소 (0x...)
-  merchant_address_solana: string;    // Solana 주소 (Base58)
-  is_active: boolean;
-  tag?: "HOT" | "NEW" | "RECOMMEND" | "NONE";
+  thumbnail_urls: string[];
+  detail_urls: string[];
+  tag: "HOT" | "NEW" | "RECOMMEND" | "NONE";
+  status: "active" | "inactive" | "deleted";
 }
+
+export interface ProductDetail extends Product {
+  merchant_name: string;
+  merchant_logo_url: string;
+}
+
+// ==================== Pool Addresses (Chains 테이블에서 관리) ====================
+
+export const POOL_ADDRESSES: Record<string, string> = {
+  bsc: "0x1234567890abcdef1234567890abcdef12345678",
+  solana: "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU",
+  base: "0x5678901234abcdef5678901234abcdef56789012",
+  avalanche: "0xAVAX567890abcdef1234567890abcdef12345678",
+  arbitrum: "0xARB1234567890abcdef1234567890abcdef1234",
+  optimism: "0xOPT1234567890abcdef1234567890abcdef1234",
+};
 
 // 체인 정보
 export const CHAINS = {
@@ -244,11 +270,36 @@ export function generatePaymentUri(
   }
 }
 
-// Mock 상품 데이터
+// ==================== Mock Merchants ====================
+
+export const mockMerchants: Record<string, Merchant> = {
+  "SHOP01": {
+    merchant_id: "01MERCHANT0001",
+    short_code: "SHOP01",
+    name: "테스트 스토어",
+    logo_url: "https://picsum.photos/seed/logo1/200/200",
+    description: "다양한 디지털 상품을 판매하는 테스트 스토어입니다.",
+    fee_rate: "2.5",
+    status: "active"
+  },
+  "CREATOR": {
+    merchant_id: "01MERCHANT0002",
+    short_code: "CREATOR",
+    name: "Creator Shop",
+    logo_url: "https://picsum.photos/seed/logo2/200/200",
+    description: "Support your favorite creators with crypto payments.",
+    fee_rate: "2.5",
+    status: "active"
+  }
+};
+
+// ==================== Mock Products ====================
+
 export const mockProducts: Record<string, Product> = {
   "A3X9K2": {
     product_id: "01HXYZ9ABC123DEF456",
     short_code: "A3X9K2",
+    merchant_id: "01MERCHANT0001",
     name: "Godsehee First Maxim Cover",
     tag: "HOT",
     price: "0.01",
@@ -262,14 +313,12 @@ export const mockProducts: Record<string, Product> = {
       "/images/godsehee/detail-v2-2.jpg",
       "https://image.fomos.kr/contents/images/board/2025/1201/1764551354176542.jpg"
     ],
-    qr_code_url: "",
-    merchant_address: "0x6d5d44da188169d2449f7d55f2780bd746bf387f",
-    merchant_address_solana: "5ep7Hvfxpp7VkqDn3bEsCyEzfzy8QradgvYXf5AEB6WW",
-    is_active: true
+    status: "active"
   },
   "B4Y0L3": {
     product_id: "01HXYZ9ABC123DEF457",
     short_code: "B4Y0L3",
+    merchant_id: "01MERCHANT0001",
     name: "Delicious Taco Set",
     tag: "RECOMMEND",
     price: "0.01",
@@ -278,15 +327,14 @@ export const mockProducts: Record<string, Product> = {
       "https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?q=80&w=2070&auto=format&fit=crop"
     ],
     detail_urls: [],
-    qr_code_url: "",
-    merchant_address: "0x6d5d44da188169d2449f7d55f2780bd746bf387f",
-    merchant_address_solana: "5ep7Hvfxpp7VkqDn3bEsCyEzfzy8QradgvYXf5AEB6WW",
-    is_active: true
+    status: "active"
   },
   "C5Z1M4": {
     product_id: "01HXYZ9ABC123DEF458",
     short_code: "C5Z1M4",
+    merchant_id: "01MERCHANT0001",
     name: "Waifu Collectors Pack",
+    tag: "NONE",
     price: "0.01",
     description: "Start your collection with 3 Super Rare character cards! Includes exclusive 'Flame Knight', 'Aqua Mage', and 'Wind Archer'. Perfect for new players.",
     thumbnail_urls: [
@@ -297,14 +345,12 @@ export const mockProducts: Record<string, Product> = {
     detail_urls: [
       "/images/ccg/promo.png"
     ],
-    qr_code_url: "",
-    merchant_address: "0x6d5d44da188169d2449f7d55f2780bd746bf387f",
-    merchant_address_solana: "5ep7Hvfxpp7VkqDn3bEsCyEzfzy8QradgvYXf5AEB6WW",
-    is_active: true
+    status: "active"
   },
   "INFLU1": {
     product_id: "INFLUENCER_SPONSOR_001",
     short_code: "INFLU1",
+    merchant_id: "01MERCHANT0002",
     name: "Creator Support Visual",
     tag: "NEW",
     price: "0.01",
@@ -314,13 +360,37 @@ export const mockProducts: Record<string, Product> = {
       "https://images.unsplash.com/photo-1492633423870-43d1cd2775eb?q=80&w=2070&auto=format&fit=crop"
     ],
     detail_urls: [],
-    qr_code_url: "",
-    merchant_address: "0x6d5d44da188169d2449f7d55f2780bd746bf387f",
-    merchant_address_solana: "5ep7Hvfxpp7VkqDn3bEsCyEzfzy8QradgvYXf5AEB6WW",
-    is_active: true
+    status: "active"
   }
 };
 
-export function getProduct(shortCode: string): Product | null {
-  return mockProducts[shortCode] || null;
+// ==================== Helper Functions ====================
+
+export function getMerchantByShortCode(shortCode: string): Merchant | null {
+  return mockMerchants[shortCode] || null;
+}
+
+export function getProductsByMerchantId(merchantId: string): Product[] {
+  return Object.values(mockProducts)
+    .filter(p => p.merchant_id === merchantId && p.status === "active");
+}
+
+export function getProductByShortCode(shortCode: string): ProductDetail | null {
+  const product = mockProducts[shortCode];
+  if (!product || product.status === "deleted") {
+    return null;
+  }
+
+  const merchant = Object.values(mockMerchants).find(m => m.merchant_id === product.merchant_id);
+
+  return {
+    ...product,
+    merchant_name: merchant?.name || "",
+    merchant_logo_url: merchant?.logo_url || ""
+  };
+}
+
+// Legacy function
+export function getProduct(shortCode: string): ProductDetail | null {
+  return getProductByShortCode(shortCode);
 }

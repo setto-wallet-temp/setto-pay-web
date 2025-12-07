@@ -6,7 +6,15 @@
  * - Staging/Prod: Wallet Server gRPC-Web API 호출
  */
 
-import { Product, mockProducts, CHAINS, TOKENS } from "./mockData";
+import {
+  Product,
+  CHAINS,
+  TOKENS,
+  POOL_ADDRESSES,
+  getMerchantByShortCode as getMerchantMock,
+  getProductsByMerchantId as getProductsMock,
+  getProductByShortCode as getProductMock,
+} from "./mockData";
 
 // 환경 설정
 const USE_MOCK_API = process.env.NEXT_PUBLIC_USE_MOCK_API !== "false";
@@ -40,13 +48,117 @@ export interface TokenInfo {
   color: string;
 }
 
+// ==================== Merchant API ====================
+
+export interface MerchantResponse {
+  merchant_id: string;
+  short_code: string;
+  name: string;
+  logo_url: string;
+  description: string;
+  products: Product[];
+  next_cursor: string;
+  pool_addresses: Record<string, string>;
+}
+
 /**
- * 상품 정보 조회 (short_code로)
+ * 스토어 정보 + 상품 리스트 조회
  */
-export async function getProductByShortCode(shortCode: string): Promise<ApiResponse<Product>> {
+export async function getMerchantByShortCode(
+  shortCode: string,
+  cursor: string = "",
+  limit: number = 10
+): Promise<ApiResponse<MerchantResponse>> {
   if (USE_MOCK_API) {
-    // Mock: 즉시 반환
-    const product = mockProducts[shortCode];
+    const merchant = getMerchantMock(shortCode);
+    if (!merchant) {
+      return {
+        success: false,
+        error: {
+          code: "PAYMENT_MERCHANT_NOT_FOUND",
+          message: "스토어를 찾을 수 없습니다.",
+        },
+      };
+    }
+
+    const products = getProductsMock(merchant.merchant_id);
+
+    return {
+      success: true,
+      data: {
+        merchant_id: merchant.merchant_id,
+        short_code: merchant.short_code,
+        name: merchant.name,
+        logo_url: merchant.logo_url,
+        description: merchant.description,
+        products: products,
+        next_cursor: "",
+        pool_addresses: POOL_ADDRESSES,
+      },
+    };
+  }
+
+  // 실제 API 호출
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/v1/merchants/${shortCode}?cursor=${cursor}&limit=${limit}`,
+      {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      return {
+        success: false,
+        error: {
+          code: errorData.payment_error || "SYSTEM_ERROR",
+          message: errorData.message || "서버 오류가 발생했습니다.",
+        },
+      };
+    }
+
+    const data = await response.json();
+    return { success: true, data };
+  } catch (error) {
+    console.error("API Error:", error);
+    return {
+      success: false,
+      error: {
+        code: "NETWORK_ERROR",
+        message: "네트워크 오류가 발생했습니다.",
+      },
+    };
+  }
+}
+
+// ==================== Product API ====================
+
+export interface ProductResponse {
+  product_id: string;
+  short_code: string;
+  name: string;
+  description: string;
+  price: string;
+  thumbnail_urls: string[];
+  detail_urls: string[];
+  tag: string;
+  status: string;
+  merchant_id: string;
+  merchant_name: string;
+  merchant_logo_url: string;
+  pool_addresses: Record<string, string>;
+}
+
+/**
+ * 상품 상세 조회 (short_code로)
+ */
+export async function getProductByShortCode(
+  shortCode: string
+): Promise<ApiResponse<ProductResponse>> {
+  if (USE_MOCK_API) {
+    const product = getProductMock(shortCode);
     if (!product) {
       return {
         success: false,
@@ -56,16 +168,32 @@ export async function getProductByShortCode(shortCode: string): Promise<ApiRespo
         },
       };
     }
-    return { success: true, data: product };
+
+    return {
+      success: true,
+      data: {
+        product_id: product.product_id,
+        short_code: product.short_code,
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        thumbnail_urls: product.thumbnail_urls,
+        detail_urls: product.detail_urls,
+        tag: product.tag,
+        status: product.status,
+        merchant_id: product.merchant_id,
+        merchant_name: product.merchant_name,
+        merchant_logo_url: product.merchant_logo_url,
+        pool_addresses: POOL_ADDRESSES,
+      },
+    };
   }
 
-  // 실제 API 호출 (gRPC-Web 또는 REST Gateway)
+  // 실제 API 호출
   try {
     const response = await fetch(`${API_BASE_URL}/v1/products/${shortCode}`, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
     });
 
     if (!response.ok) {
@@ -80,22 +208,7 @@ export async function getProductByShortCode(shortCode: string): Promise<ApiRespo
     }
 
     const data = await response.json();
-    return {
-      success: true,
-      data: {
-        product_id: data.product_id,
-        short_code: data.short_code,
-        name: data.name,
-        description: data.description,
-        price: data.price,
-        thumbnail_urls: data.thumbnail_urls || [],
-        detail_urls: data.detail_urls || [],
-        qr_code_url: "",
-        merchant_address: data.merchant_address,
-        merchant_address_solana: data.merchant_address_solana || "",
-        is_active: true,
-      },
-    };
+    return { success: true, data };
   } catch (error) {
     console.error("API Error:", error);
     return {
