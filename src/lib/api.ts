@@ -7,10 +7,15 @@
  */
 
 import {
+  Chain,
+  Token,
   Product,
-  CHAINS,
-  TOKENS,
-  POOL_ADDRESSES,
+  TOKEN_META,
+  getChainById,
+  getActiveChains,
+  getTokenByChainAndSymbol,
+  getTokensByChain,
+  getAllPoolAddresses,
   getMerchantByShortCode as getMerchantMock,
   getProductsByMerchantId as getProductsMock,
   getProductByShortCode as getProductMock,
@@ -30,21 +35,13 @@ export interface ApiResponse<T> {
   };
 }
 
-// Chain/Token 정보 (서버에서 제공)
-export interface ChainInfo {
-  id: string;
-  name: string;
-  chainId: number;
-  type: "evm" | "svm";
-  icon: string;
-  tokens: Record<string, string>;
-  decimals: number;
-}
+// ==================== Re-export DB Entity Types ====================
 
-export interface TokenInfo {
-  id: string;
-  name: string;
-  icon: string;
+export type { Chain, Token, Product } from "./mockData";
+
+// 클라이언트용 토큰 메타 (icon_url, color 포함)
+export interface TokenWithMeta extends Token {
+  icon_url: string;
   color: string;
 }
 
@@ -93,7 +90,7 @@ export async function getMerchantByShortCode(
         description: merchant.description,
         products: products,
         next_cursor: "",
-        pool_addresses: POOL_ADDRESSES,
+        pool_addresses: getAllPoolAddresses(),
       },
     };
   }
@@ -184,7 +181,7 @@ export async function getProductByShortCode(
         merchant_id: product.merchant_id,
         merchant_name: product.merchant_name,
         merchant_logo_url: product.merchant_logo_url,
-        pool_addresses: POOL_ADDRESSES,
+        pool_addresses: getAllPoolAddresses(),
       },
     };
   }
@@ -221,9 +218,8 @@ export async function getProductByShortCode(
   }
 }
 
-/**
- * 결제 정보 요청 (주문 생성)
- */
+// ==================== Payment API ====================
+
 export interface PaymentInfo {
   order_id: string;
   to_address: string;
@@ -236,23 +232,26 @@ export interface PaymentInfo {
   tx_data: string;
 }
 
+/**
+ * 결제 정보 요청 (주문 생성)
+ */
 export async function getPaymentInfo(
   productId: string,
-  chain: string,
-  token: string
+  chainId: string,
+  tokenSymbol: string
 ): Promise<ApiResponse<PaymentInfo>> {
   if (USE_MOCK_API) {
     // Mock: 가상 결제 정보 생성
-    const chainInfo = CHAINS[chain as keyof typeof CHAINS];
-    if (!chainInfo) {
+    const chain = getChainById(chainId);
+    if (!chain) {
       return {
         success: false,
         error: { code: "INVALID_CHAIN", message: "지원하지 않는 체인입니다." },
       };
     }
 
-    const tokenAddress = chainInfo.tokens[token as "USDT" | "USDC"];
-    if (!tokenAddress) {
+    const token = getTokenByChainAndSymbol(chainId, tokenSymbol);
+    if (!token) {
       return {
         success: false,
         error: { code: "INVALID_TOKEN", message: "지원하지 않는 토큰입니다." },
@@ -263,13 +262,13 @@ export async function getPaymentInfo(
       success: true,
       data: {
         order_id: `mock_order_${Date.now()}`,
-        to_address: "0xPoolWalletAddress1234567890abcdef12345678",
+        to_address: chain.pool_address,
         amount: "1.00",
         signature: "mock_signature_" + Date.now(),
         expires_at: Date.now() + 15 * 60 * 1000, // 15분 후 만료
-        chain: chain,
-        token: token,
-        contract_address: tokenAddress,
+        chain: chainId,
+        token: tokenSymbol,
+        contract_address: token.contract_address,
         tx_data: `order:${productId}`,
       },
     };
@@ -284,8 +283,8 @@ export async function getPaymentInfo(
       },
       body: JSON.stringify({
         product_id: productId,
-        chain: chain,
-        token: token,
+        chain: chainId,
+        token: tokenSymbol,
       }),
     });
 
@@ -372,9 +371,8 @@ export async function submitPayment(
   }
 }
 
-/**
- * 주문 상태 조회
- */
+// ==================== Order API ====================
+
 export interface OrderStatus {
   order_id: string;
   status: "pending" | "submitted" | "detected" | "confirmed" | "finalized" | "failed";
@@ -382,6 +380,9 @@ export interface OrderStatus {
   confirmed_at?: number;
 }
 
+/**
+ * 주문 상태 조회
+ */
 export async function getOrderStatus(orderId: string): Promise<ApiResponse<OrderStatus>> {
   if (USE_MOCK_API) {
     // Mock: 가상 상태
@@ -427,16 +428,37 @@ export async function getOrderStatus(orderId: string): Promise<ApiResponse<Order
   }
 }
 
+// ==================== Chain/Token Helper Functions ====================
+
 /**
- * 지원 체인 목록
+ * 지원 체인 목록 (DB Chains 테이블)
  */
-export function getSupportedChains(): ChainInfo[] {
-  return Object.values(CHAINS);
+export function getSupportedChains(): Chain[] {
+  return getActiveChains();
 }
 
 /**
- * 지원 토큰 목록
+ * 체인별 토큰 목록 (DB Tokens 테이블)
  */
-export function getSupportedTokens(): TokenInfo[] {
-  return [...TOKENS];
+export function getTokensForChain(chainId: string): Token[] {
+  return getTokensByChain(chainId);
+}
+
+/**
+ * 토큰 메타데이터 포함 목록 (클라이언트용)
+ */
+export function getTokensWithMeta(chainId: string): TokenWithMeta[] {
+  const tokens = getTokensByChain(chainId);
+  return tokens.map(token => ({
+    ...token,
+    icon_url: TOKEN_META[token.token_symbol]?.icon_url || "",
+    color: TOKEN_META[token.token_symbol]?.color || "#000000",
+  }));
+}
+
+/**
+ * 지원 토큰 심볼 목록 (USDT, USDC)
+ */
+export function getSupportedTokenSymbols(): string[] {
+  return Object.keys(TOKEN_META);
 }

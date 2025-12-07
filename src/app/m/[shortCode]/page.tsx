@@ -32,7 +32,7 @@ export default function MerchantShopPage() {
     return (
         <div className="min-h-screen bg-black text-white font-sans selection:bg-purple-500/30 pb-20">
 
-            <main className="max-w-md mx-auto px-4 mt-8">
+            <main className="max-w-md md:max-w-5xl mx-auto px-4 mt-8">
 
                 {/* Merchant Profile */}
                 <ProfileSection merchant={merchant} />
@@ -40,7 +40,7 @@ export default function MerchantShopPage() {
                 {/* Product Grid */}
                 <div className="mb-4">
                     {products.length > 0 ? (
-                        <div className="grid grid-cols-2 gap-2">
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                             {products.map((product) => (
                                 <ProductCard
                                     key={product.short_code}
@@ -84,7 +84,7 @@ function ProfileSection({ merchant }: { merchant: any }) {
                 />
             </div>
             <div className="flex flex-col -mt-4 flex-1">
-                <h1 className="text-xl font-bold mb-2">{merchant.name}</h1>
+                <h1 className="text-2xl font-black tracking-tighter italic bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400 mb-2">{merchant.name}</h1>
                 <div className="text-sm text-gray-400 leading-relaxed whitespace-pre-wrap">
                     {displayDescription}
                     {isLongText && (

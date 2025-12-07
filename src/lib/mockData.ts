@@ -1,155 +1,188 @@
-// ==================== Types ====================
+// ==================== DB Entity Types (스키마 1:1 매핑) ====================
 
+// Merchants 테이블
 export interface Merchant {
-  merchant_id: string;
+  merchant_id: string;        // PK
   short_code: string;
   name: string;
   logo_url: string;
   description: string;
   fee_rate: string;
   status: "active" | "suspended";
+  created_at?: number;
+  updated_at?: number;
 }
 
+// Products 테이블
 export interface Product {
-  product_id: string;
+  product_id: string;         // PK
   short_code: string;
   merchant_id: string;
   name: string;
-  price: string;
   description: string;
+  price: string;
   thumbnail_urls: string[];
   detail_urls: string[];
   tag: "HOT" | "NEW" | "RECOMMEND" | "NONE";
   status: "active" | "inactive" | "deleted";
+  created_at?: number;
+  updated_at?: number;
 }
+
+// Chains 테이블
+export interface Chain {
+  chain_id: string;           // PK
+  chain_type: "evm" | "svm";
+  display_name: string;
+  icon_url: string;
+  network_chain_id: number;
+  pool_address: string;
+  is_active: boolean;
+  // RPC 정보는 서버 전용이므로 클라이언트에서 생략
+  // ws_url, http_url, grpc_url, rpc_timeout_ms, block_time_sec, has_confirmed_stage, reorg_check
+}
+
+// Tokens 테이블
+export interface Token {
+  chain_id: string;           // PK
+  token_symbol: string;       // SK
+  contract_address: string;
+  decimals: number;
+  is_active: boolean;
+}
+
+// ==================== 조인/확장 타입 ====================
 
 export interface ProductDetail extends Product {
   merchant_name: string;
   merchant_logo_url: string;
 }
 
-// ==================== Pool Addresses (Chains 테이블에서 관리) ====================
+// ==================== Mock Chains 테이블 데이터 ====================
 
-export const POOL_ADDRESSES: Record<string, string> = {
-  bsc: "0x6d5d44da188169d2449f7d55f2780bd746bf387f",
-  solana: "5ep7Hvfxpp7VkqDn3bEsCyEzfzy8QradgvYXf5AEB6WW",
-  base: "0x6d5d44da188169d2449f7d55f2780bd746bf387f",
-  avalanche: "0x6d5d44da188169d2449f7d55f2780bd746bf387f",
-  arbitrum: "0x6d5d44da188169d2449f7d55f2780bd746bf387f",
-  optimism: "0x6d5d44da188169d2449f7d55f2780bd746bf387f",
+export const mockChains: Chain[] = [
+  {
+    chain_id: "bsc",
+    chain_type: "evm",
+    display_name: "BNB Chain",
+    icon_url: "/chains/bsc.svg",
+    network_chain_id: 56,
+    pool_address: "0x6d5d44da188169d2449f7d55f2780bd746bf387f",
+    is_active: true
+  },
+  {
+    chain_id: "solana",
+    chain_type: "svm",
+    display_name: "Solana",
+    icon_url: "/chains/solana.svg",
+    network_chain_id: 0,
+    pool_address: "5ep7Hvfxpp7VkqDn3bEsCyEzfzy8QradgvYXf5AEB6WW",
+    is_active: true
+  },
+  {
+    chain_id: "base",
+    chain_type: "evm",
+    display_name: "Base",
+    icon_url: "/chains/base.png",
+    network_chain_id: 8453,
+    pool_address: "0x6d5d44da188169d2449f7d55f2780bd746bf387f",
+    is_active: true
+  },
+  {
+    chain_id: "avalanche",
+    chain_type: "evm",
+    display_name: "Avalanche",
+    icon_url: "/chains/avalanche.svg",
+    network_chain_id: 43114,
+    pool_address: "0x6d5d44da188169d2449f7d55f2780bd746bf387f",
+    is_active: true
+  },
+  {
+    chain_id: "arbitrum",
+    chain_type: "evm",
+    display_name: "Arbitrum",
+    icon_url: "/chains/arbitrum.svg",
+    network_chain_id: 42161,
+    pool_address: "0x6d5d44da188169d2449f7d55f2780bd746bf387f",
+    is_active: true
+  },
+  {
+    chain_id: "optimism",
+    chain_type: "evm",
+    display_name: "Optimism",
+    icon_url: "/chains/optimism.svg",
+    network_chain_id: 10,
+    pool_address: "0x6d5d44da188169d2449f7d55f2780bd746bf387f",
+    is_active: true
+  }
+];
+
+// ==================== Mock Tokens 테이블 데이터 ====================
+
+export const mockTokens: Token[] = [
+  // BSC
+  { chain_id: "bsc", token_symbol: "USDT", contract_address: "0x55d398326f99059fF775485246999027B3197955", decimals: 18, is_active: true },
+  { chain_id: "bsc", token_symbol: "USDC", contract_address: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d", decimals: 18, is_active: true },
+  // Solana
+  { chain_id: "solana", token_symbol: "USDT", contract_address: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB", decimals: 6, is_active: true },
+  { chain_id: "solana", token_symbol: "USDC", contract_address: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", decimals: 6, is_active: true },
+  // Base
+  { chain_id: "base", token_symbol: "USDT", contract_address: "0xfde4C96c8593536E31F229EA8f37b2ADa2699bb2", decimals: 6, is_active: true },
+  { chain_id: "base", token_symbol: "USDC", contract_address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913", decimals: 6, is_active: true },
+  // Avalanche
+  { chain_id: "avalanche", token_symbol: "USDT", contract_address: "0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7", decimals: 6, is_active: true },
+  { chain_id: "avalanche", token_symbol: "USDC", contract_address: "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E", decimals: 6, is_active: true },
+  // Arbitrum
+  { chain_id: "arbitrum", token_symbol: "USDT", contract_address: "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9", decimals: 6, is_active: true },
+  { chain_id: "arbitrum", token_symbol: "USDC", contract_address: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831", decimals: 6, is_active: true },
+  // Optimism
+  { chain_id: "optimism", token_symbol: "USDT", contract_address: "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58", decimals: 6, is_active: true },
+  { chain_id: "optimism", token_symbol: "USDC", contract_address: "0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85", decimals: 6, is_active: true }
+];
+
+// ==================== 클라이언트 전용 메타데이터 (DB에 없음) ====================
+
+export const TOKEN_META: Record<string, { icon_url: string; color: string }> = {
+  USDT: { icon_url: "/tokens/usdt.svg", color: "#26A17B" },
+  USDC: { icon_url: "/tokens/usdc.svg", color: "#2775CA" }
 };
 
-// 체인 정보 (Chains 테이블 + Tokens 테이블 조인 형태)
-export const CHAINS = {
-  bsc: {
-    id: "bsc",
-    name: "BNB Chain",
-    chainId: 56,
-    type: "evm",
-    iconUrl: "/chains/bsc.svg",
-    tokens: {
-      USDT: { address: "0x55d398326f99059fF775485246999027B3197955", decimals: 18 },
-      USDC: { address: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d", decimals: 18 }
-    }
-  },
-  solana: {
-    id: "solana",
-    name: "Solana",
-    chainId: 0,
-    type: "svm",
-    iconUrl: "/chains/solana.svg",
-    tokens: {
-      USDT: { address: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB", decimals: 6 },
-      USDC: { address: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", decimals: 6 }
-    }
-  },
-  base: {
-    id: "base",
-    name: "Base",
-    chainId: 8453,
-    type: "evm",
-    iconUrl: "/chains/base.png",
-    tokens: {
-      USDT: { address: "0xfde4C96c8593536E31F229EA8f37b2ADa2699bb2", decimals: 6 },
-      USDC: { address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913", decimals: 6 }
-    }
-  },
-  avalanche: {
-    id: "avalanche",
-    name: "Avalanche",
-    chainId: 43114,
-    type: "evm",
-    iconUrl: "/chains/avalanche.svg",
-    tokens: {
-      USDT: { address: "0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7", decimals: 6 },
-      USDC: { address: "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E", decimals: 6 }
-    }
-  },
-  arbitrum: {
-    id: "arbitrum",
-    name: "Arbitrum",
-    chainId: 42161,
-    type: "evm",
-    iconUrl: "/chains/arbitrum.svg",
-    tokens: {
-      USDT: { address: "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9", decimals: 6 },
-      USDC: { address: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831", decimals: 6 }
-    }
-  },
-  optimism: {
-    id: "optimism",
-    name: "Optimism",
-    chainId: 10,
-    type: "evm",
-    iconUrl: "/chains/optimism.svg",
-    tokens: {
-      USDT: { address: "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58", decimals: 6 },
-      USDC: { address: "0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85", decimals: 6 }
-    }
-  }
-} as const;
-
-export const TOKENS = [
-  { id: "USDT", name: "USDT", iconUrl: "/tokens/usdt.svg", color: "#26A17B" },
-  { id: "USDC", name: "USDC", iconUrl: "/tokens/usdc.svg", color: "#2775CA" }
-] as const;
-
-// 지갑 정보
+// 지갑 정보 (DB에 없음 - 클라이언트 전용)
 export type WalletType = "setto" | "metamask" | "trust" | "phantom";
 
 export const WALLETS: Record<WalletType, {
   id: WalletType;
   name: string;
-  iconUrl: string;
-  supportedChainTypes: ("evm" | "svm")[];
+  icon_url: string;
+  supported_chain_types: ("evm" | "svm")[];
   enabled: boolean;
 }> = {
   setto: {
     id: "setto",
     name: "Setto Wallet",
-    iconUrl: "/wallets/setto.svg",
-    supportedChainTypes: ["evm", "svm"],
+    icon_url: "/wallets/setto.svg",
+    supported_chain_types: ["evm", "svm"],
     enabled: false  // 준비중
   },
   metamask: {
     id: "metamask",
     name: "MetaMask",
-    iconUrl: "/wallets/metamask.svg",
-    supportedChainTypes: ["evm"],
+    icon_url: "/wallets/metamask.svg",
+    supported_chain_types: ["evm"],
     enabled: true
   },
   trust: {
     id: "trust",
     name: "Trust Wallet",
-    iconUrl: "/wallets/trust.svg",
-    supportedChainTypes: ["evm", "svm"],  // Solana도 지원
+    icon_url: "/wallets/trust.svg",
+    supported_chain_types: ["evm", "svm"],
     enabled: true
   },
   phantom: {
     id: "phantom",
     name: "Phantom",
-    iconUrl: "/wallets/phantom.svg",
-    supportedChainTypes: ["svm"],
+    icon_url: "/wallets/phantom.svg",
+    supported_chain_types: ["svm"],
     enabled: true
   }
 };
@@ -157,58 +190,93 @@ export const WALLETS: Record<WalletType, {
 // Trust Wallet SLIP44 코드 매핑
 const SLIP44_CODES: Record<string, number> = {
   bsc: 20000714,
-  base: 8453,        // Base는 EIP-155 chain ID 사용
-  avalanche: 9005,   // Avalanche C-Chain
-  arbitrum: 60,      // Arbitrum은 Ethereum 계열
-  optimism: 60,      // Optimism도 Ethereum 계열
+  base: 8453,
+  avalanche: 9005,
+  arbitrum: 60,
+  optimism: 60,
 };
 
-// 지갑별 딥링크 생성 함수
+// ==================== Helper Functions ====================
+
+// 체인 조회
+export function getChainById(chainId: string): Chain | null {
+  return mockChains.find(c => c.chain_id === chainId && c.is_active) || null;
+}
+
+export function getActiveChains(): Chain[] {
+  return mockChains.filter(c => c.is_active);
+}
+
+// 토큰 조회
+export function getTokenByChainAndSymbol(chainId: string, tokenSymbol: string): Token | null {
+  return mockTokens.find(t => t.chain_id === chainId && t.token_symbol === tokenSymbol && t.is_active) || null;
+}
+
+export function getTokensByChain(chainId: string): Token[] {
+  return mockTokens.filter(t => t.chain_id === chainId && t.is_active);
+}
+
+// Pool 주소 조회 (Chains 테이블에서)
+export function getPoolAddress(chainId: string): string | null {
+  const chain = getChainById(chainId);
+  return chain?.pool_address || null;
+}
+
+// 모든 Pool 주소 (API 응답용)
+export function getAllPoolAddresses(): Record<string, string> {
+  const result: Record<string, string> = {};
+  for (const chain of mockChains) {
+    if (chain.is_active) {
+      result[chain.chain_id] = chain.pool_address;
+    }
+  }
+  return result;
+}
+
+// ==================== 지갑 딥링크 생성 ====================
+
 export function generateWalletDeeplink(
   wallet: WalletType,
-  chain: keyof typeof CHAINS,
-  token: "USDT" | "USDC",
+  chainId: string,
+  tokenSymbol: string,
   recipient: string,
   amount: string,
   memo?: string
 ): string {
-  const chainInfo = CHAINS[chain];
-  const tokenInfo = chainInfo.tokens[token];
+  const chain = getChainById(chainId);
+  const token = getTokenByChainAndSymbol(chainId, tokenSymbol);
+
+  if (!chain || !token) {
+    throw new Error(`Invalid chain or token: ${chainId}/${tokenSymbol}`);
+  }
+
   const amountInSmallestUnit = BigInt(
-    Math.floor(parseFloat(amount) * Math.pow(10, tokenInfo.decimals))
+    Math.floor(parseFloat(amount) * Math.pow(10, token.decimals))
   );
 
   switch (wallet) {
     case "metamask":
-      // MetaMask Universal Link
-      // https://metamask.app.link/send/{tokenAddress}@{chainId}/transfer?address={to}&uint256={amount}
-      return `https://metamask.app.link/send/${tokenInfo.address}@${chainInfo.chainId}/transfer?address=${recipient}&uint256=${amountInSmallestUnit}`;
+      return `https://metamask.app.link/send/${token.contract_address}@${chain.network_chain_id}/transfer?address=${recipient}&uint256=${amountInSmallestUnit}`;
 
     case "trust":
-      // Trust Wallet Deeplink
-      // https://link.trustwallet.com/send?asset=c{SLIP44}_t{token}&address={to}&amount={amount}&memo={memo}
-      // Solana SLIP44 = 501
-      const slip44 = chainInfo.type === "svm" ? 501 : (SLIP44_CODES[chain] || chainInfo.chainId);
-      let trustUrl = `https://link.trustwallet.com/send?asset=c${slip44}_t${tokenInfo.address}&address=${recipient}&amount=${amount}`;
+      const slip44 = chain.chain_type === "svm" ? 501 : (SLIP44_CODES[chainId] || chain.network_chain_id);
+      let trustUrl = `https://link.trustwallet.com/send?asset=c${slip44}_t${token.contract_address}&address=${recipient}&amount=${amount}`;
       if (memo) {
         trustUrl += `&memo=${encodeURIComponent(memo)}`;
       }
       return trustUrl;
 
     case "phantom":
-      // Phantom - Solana Pay URL (Phantom 앱에서 직접 인식)
-      // solana:<recipient>?amount=<amount>&spl-token=<token_mint>&memo=<memo>
-      if (chainInfo.type !== "svm") {
+      if (chain.chain_type !== "svm") {
         throw new Error("Phantom only supports Solana");
       }
-      let phantomUrl = `solana:${recipient}?amount=${amount}&spl-token=${tokenInfo.address}`;
+      let phantomUrl = `solana:${recipient}?amount=${amount}&spl-token=${token.contract_address}`;
       if (memo) {
         phantomUrl += `&memo=${encodeURIComponent(memo)}`;
       }
       return phantomUrl;
 
     case "setto":
-      // Setto Wallet (준비중)
       throw new Error("Setto Wallet is not yet available");
 
     default:
@@ -217,49 +285,52 @@ export function generateWalletDeeplink(
 }
 
 // 지갑이 특정 체인을 지원하는지 확인
-export function isChainSupportedByWallet(wallet: WalletType, chain: keyof typeof CHAINS): boolean {
+export function isChainSupportedByWallet(wallet: WalletType, chainId: string): boolean {
   const walletInfo = WALLETS[wallet];
-  const chainInfo = CHAINS[chain];
-  return walletInfo.supportedChainTypes.includes(chainInfo.type as "evm" | "svm");
+  const chain = getChainById(chainId);
+  if (!chain) return false;
+  return walletInfo.supported_chain_types.includes(chain.chain_type);
 }
 
 // 지갑에서 지원하는 체인 목록 반환
-export function getSupportedChainsForWallet(wallet: WalletType): (keyof typeof CHAINS)[] {
+export function getSupportedChainsForWallet(wallet: WalletType): Chain[] {
   const walletInfo = WALLETS[wallet];
-  return (Object.keys(CHAINS) as (keyof typeof CHAINS)[]).filter(chainId => {
-    const chainInfo = CHAINS[chainId];
-    return walletInfo.supportedChainTypes.includes(chainInfo.type as "evm" | "svm");
-  });
+  return mockChains.filter(chain =>
+    chain.is_active && walletInfo.supported_chain_types.includes(chain.chain_type)
+  );
 }
 
-// 레거시 URI 생성 함수 (기존 호환성 유지)
+// 레거시 URI 생성 함수
 export function generatePaymentUri(
-  chain: keyof typeof CHAINS,
-  token: "USDT" | "USDC",
+  chainId: string,
+  tokenSymbol: string,
   recipient: string,
   amount: string,
   memo?: string
 ): string {
-  const chainInfo = CHAINS[chain];
-  const tokenInfo = chainInfo.tokens[token];
+  const chain = getChainById(chainId);
+  const token = getTokenByChainAndSymbol(chainId, tokenSymbol);
+
+  if (!chain || !token) {
+    throw new Error(`Invalid chain or token: ${chainId}/${tokenSymbol}`);
+  }
+
   const amountInSmallestUnit = BigInt(
-    Math.floor(parseFloat(amount) * Math.pow(10, tokenInfo.decimals))
+    Math.floor(parseFloat(amount) * Math.pow(10, token.decimals))
   );
 
-  if (chainInfo.type === "svm") {
-    // Solana Pay
-    let uri = `solana:${recipient}?amount=${amount}&spl-token=${tokenInfo.address}`;
+  if (chain.chain_type === "svm") {
+    let uri = `solana:${recipient}?amount=${amount}&spl-token=${token.contract_address}`;
     if (memo) {
       uri += `&memo=${encodeURIComponent(memo)}`;
     }
     return uri;
   } else {
-    // EIP-681
-    return `ethereum:${tokenInfo.address}@${chainInfo.chainId}/transfer?address=${recipient}&uint256=${amountInSmallestUnit}`;
+    return `ethereum:${token.contract_address}@${chain.network_chain_id}/transfer?address=${recipient}&uint256=${amountInSmallestUnit}`;
   }
 }
 
-// ==================== Mock Merchants ====================
+// ==================== Mock Merchants 테이블 데이터 ====================
 
 export const mockMerchants: Record<string, Merchant> = {
   "SHOP01": {
@@ -275,10 +346,9 @@ export const mockMerchants: Record<string, Merchant> = {
     fee_rate: "2.5",
     status: "active"
   },
-
 };
 
-// ==================== Mock Products ====================
+// ==================== Mock Products 테이블 데이터 ====================
 
 export const mockProducts: Record<string, Product> = {
   "A3X9K2": {
@@ -349,7 +419,7 @@ export const mockProducts: Record<string, Product> = {
   }
 };
 
-// ==================== Helper Functions ====================
+// ==================== Merchant/Product Helper Functions ====================
 
 export function getMerchantByShortCode(shortCode: string): Merchant | null {
   return mockMerchants[shortCode] || null;

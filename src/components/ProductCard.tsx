@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Product, POOL_ADDRESSES } from "@/lib/mockData";
+import { Product, getAllPoolAddresses } from "@/lib/mockData";
 import { ProductResponse } from "@/lib/api";
 import { useProductStore } from "@/lib/store";
 
@@ -43,7 +43,7 @@ export default function ProductCard({ product, merchantName = "", merchantLogoUr
       merchant_id: product.merchant_id,
       merchant_name: merchantName,
       merchant_logo_url: merchantLogoUrl,
-      pool_addresses: POOL_ADDRESSES,
+      pool_addresses: getAllPoolAddresses(),
     };
 
     setProduct(product.short_code, productResponse);

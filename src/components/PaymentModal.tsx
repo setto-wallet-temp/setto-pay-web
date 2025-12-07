@@ -2,9 +2,16 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { CHAINS, TOKENS, WALLETS, WalletType, generateWalletDeeplink, getSupportedChainsForWallet } from "@/lib/mockData";
+import {
+  Chain,
+  WALLETS,
+  WalletType,
+  TOKEN_META,
+  generateWalletDeeplink,
+  getSupportedChainsForWallet,
+  getTokensByChain,
+} from "@/lib/mockData";
 
-type ChainKey = keyof typeof CHAINS;
 type TokenKey = "USDT" | "USDC";
 type PaymentStep = "wallet" | "chain" | "processing" | "success";
 
@@ -24,7 +31,7 @@ export default function PaymentModal({
   poolAddresses,
 }: PaymentModalProps) {
   const [selectedWallet, setSelectedWallet] = useState<WalletType | null>(null);
-  const [selectedChain, setSelectedChain] = useState<ChainKey | null>(null);
+  const [selectedChain, setSelectedChain] = useState<Chain | null>(null);
   const [selectedToken, setSelectedToken] = useState<TokenKey | null>(null);
   const [paymentStep, setPaymentStep] = useState<PaymentStep>("wallet");
 
@@ -45,7 +52,9 @@ export default function PaymentModal({
     setSelectedWallet(wallet);
 
     if (wallet === "phantom") {
-      setSelectedChain("solana");
+      // Phantom은 Solana만 지원
+      const solanaChain = getSupportedChainsForWallet(wallet).find(c => c.chain_id === "solana");
+      setSelectedChain(solanaChain || null);
     } else {
       setSelectedChain(null);
     }
@@ -65,12 +74,12 @@ export default function PaymentModal({
 
     setPaymentStep("processing");
 
-    const recipientAddress = poolAddresses[selectedChain];
+    const recipientAddress = poolAddresses[selectedChain.chain_id];
 
     try {
       const deeplink = generateWalletDeeplink(
         selectedWallet,
-        selectedChain,
+        selectedChain.chain_id,
         selectedToken,
         recipientAddress,
         productPrice,
@@ -190,7 +199,7 @@ function WalletSelectionStep({
               </div>
             )}
             <img
-              src={wallet.iconUrl}
+              src={wallet.icon_url}
               alt={wallet.name}
               className="w-10 h-10 rounded-xl object-contain"
             />
@@ -239,16 +248,19 @@ function ChainTokenSelectionStep({
   onPay,
 }: {
   selectedWallet: WalletType | null;
-  selectedChain: ChainKey | null;
+  selectedChain: Chain | null;
   selectedToken: TokenKey | null;
-  availableChains: (keyof typeof CHAINS)[];
+  availableChains: Chain[];
   productPrice: string;
-  onSelectChain: (chain: ChainKey) => void;
+  onSelectChain: (chain: Chain) => void;
   onSelectToken: (token: TokenKey) => void;
   onBack: () => void;
   onClose: () => void;
   onPay: () => void;
 }) {
+  // 선택된 체인의 토큰 목록
+  const availableTokens = selectedChain ? getTokensByChain(selectedChain.chain_id) : [];
+
   return (
     <div className="p-8 flex flex-col h-full">
       <div className="flex justify-between items-center mb-6 mt-2">
@@ -277,35 +289,32 @@ function ChainTokenSelectionStep({
           Select Network
         </label>
         <div className="grid grid-cols-3 gap-3">
-          {availableChains.map((chainId) => {
-            const chain = CHAINS[chainId];
-            return (
-              <button
-                key={chain.id}
-                onClick={() => onSelectChain(chain.id as ChainKey)}
-                className={`group relative p-3 rounded-2xl border transition-all duration-300 flex flex-col items-center gap-2 overflow-hidden ${
-                  selectedChain === chain.id
-                    ? "border-purple-500 bg-purple-500/10 shadow-[0_0_20px_-5px_rgba(168,85,247,0.4)]"
-                    : "border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20"
+          {availableChains.map((chain) => (
+            <button
+              key={chain.chain_id}
+              onClick={() => onSelectChain(chain)}
+              className={`group relative p-3 rounded-2xl border transition-all duration-300 flex flex-col items-center gap-2 overflow-hidden ${
+                selectedChain?.chain_id === chain.chain_id
+                  ? "border-purple-500 bg-purple-500/10 shadow-[0_0_20px_-5px_rgba(168,85,247,0.4)]"
+                  : "border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20"
+              }`}
+            >
+              <Image
+                src={chain.icon_url}
+                alt={chain.display_name}
+                width={28}
+                height={28}
+                className="relative z-10 filter drop-shadow-lg group-hover:scale-110 transition"
+              />
+              <span
+                className={`text-[10px] font-medium tracking-wide uppercase ${
+                  selectedChain?.chain_id === chain.chain_id ? "text-purple-300" : "text-gray-400"
                 }`}
               >
-                <Image
-                  src={chain.iconUrl}
-                  alt={chain.name}
-                  width={28}
-                  height={28}
-                  className="relative z-10 filter drop-shadow-lg group-hover:scale-110 transition"
-                />
-                <span
-                  className={`text-[10px] font-medium tracking-wide uppercase ${
-                    selectedChain === chain.id ? "text-purple-300" : "text-gray-400"
-                  }`}
-                >
-                  {chain.name}
-                </span>
-              </button>
-            );
-          })}
+                {chain.display_name}
+              </span>
+            </button>
+          ))}
         </div>
       </div>
 
@@ -315,32 +324,40 @@ function ChainTokenSelectionStep({
           Select Token
         </label>
         <div className="grid grid-cols-2 gap-3">
-          {TOKENS.map((token) => (
-            <button
-              key={token.id}
-              onClick={() => onSelectToken(token.id as TokenKey)}
-              className={`p-4 rounded-2xl border transition-all flex items-center gap-4 ${
-                selectedToken === token.id
-                  ? "border-purple-500 bg-purple-500/10 shadow-lg"
-                  : "border-white/5 bg-white/5 hover:bg-white/10"
-              }`}
-            >
-              <Image
-                src={token.iconUrl}
-                alt={token.name}
-                width={40}
-                height={40}
-                className="rounded-full"
-              />
-              <div className="flex flex-col items-start">
-                <span className="font-bold text-white">{token.name}</span>
-                <span className="text-xs text-gray-500">Stablecoin</span>
-              </div>
-              {selectedToken === token.id && (
-                <div className="ml-auto w-2 h-2 rounded-full bg-purple-500" />
-              )}
-            </button>
-          ))}
+          {(["USDT", "USDC"] as TokenKey[]).map((tokenSymbol) => {
+            const tokenMeta = TOKEN_META[tokenSymbol];
+            const tokenExists = availableTokens.some(t => t.token_symbol === tokenSymbol);
+
+            return (
+              <button
+                key={tokenSymbol}
+                onClick={() => tokenExists && onSelectToken(tokenSymbol)}
+                disabled={!tokenExists}
+                className={`p-4 rounded-2xl border transition-all flex items-center gap-4 ${
+                  selectedToken === tokenSymbol
+                    ? "border-purple-500 bg-purple-500/10 shadow-lg"
+                    : !tokenExists
+                    ? "border-white/5 bg-white/5 opacity-50 cursor-not-allowed"
+                    : "border-white/5 bg-white/5 hover:bg-white/10"
+                }`}
+              >
+                <Image
+                  src={tokenMeta.icon_url}
+                  alt={tokenSymbol}
+                  width={40}
+                  height={40}
+                  className="rounded-full"
+                />
+                <div className="flex flex-col items-start">
+                  <span className="font-bold text-white">{tokenSymbol}</span>
+                  <span className="text-xs text-gray-500">Stablecoin</span>
+                </div>
+                {selectedToken === tokenSymbol && (
+                  <div className="ml-auto w-2 h-2 rounded-full bg-purple-500" />
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
 
