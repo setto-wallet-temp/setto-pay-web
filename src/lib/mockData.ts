@@ -110,8 +110,8 @@ export const CHAINS = {
 } as const;
 
 export const TOKENS = [
-  { id: "USDT", name: "USDT", icon: "💵", color: "#26A17B" },
-  { id: "USDC", name: "USDC", icon: "💲", color: "#2775CA" }
+  { id: "USDT", name: "USDT", iconUrl: "/tokens/usdt.svg", color: "#26A17B" },
+  { id: "USDC", name: "USDC", iconUrl: "/tokens/usdc.svg", color: "#2775CA" }
 ] as const;
 
 // 지갑 정보
