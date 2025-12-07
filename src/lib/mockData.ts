@@ -31,12 +31,12 @@ export interface ProductDetail extends Product {
 // ==================== Pool Addresses (Chains 테이블에서 관리) ====================
 
 export const POOL_ADDRESSES: Record<string, string> = {
-  bsc: "0x1234567890abcdef1234567890abcdef12345678",
-  solana: "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU",
-  base: "0x5678901234abcdef5678901234abcdef56789012",
-  avalanche: "0xAVAX567890abcdef1234567890abcdef12345678",
-  arbitrum: "0xARB1234567890abcdef1234567890abcdef1234",
-  optimism: "0xOPT1234567890abcdef1234567890abcdef1234",
+  bsc: "0x6d5d44da188169d2449f7d55f2780bd746bf387f",
+  solana: "5ep7Hvfxpp7VkqDn3bEsCyEzfzy8QradgvYXf5AEB6WW",
+  base: "0x6d5d44da188169d2449f7d55f2780bd746bf387f",
+  avalanche: "0x6d5d44da188169d2449f7d55f2780bd746bf387f",
+  arbitrum: "0x6d5d44da188169d2449f7d55f2780bd746bf387f",
+  optimism: "0x6d5d44da188169d2449f7d55f2780bd746bf387f",
 };
 
 // 체인 정보
