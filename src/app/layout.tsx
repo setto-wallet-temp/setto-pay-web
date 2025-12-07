@@ -19,9 +19,10 @@ export default function RootLayout({
             __html: `
 (function forceOpenInChrome() {
   const ua = navigator.userAgent;
+  const isAndroid = /Android/i.test(ua);
   const isKakao = /KAKAOTALK/i.test(ua);
 
-  if (isKakao) {
+  if (isAndroid && isKakao) {
     location.href = \`intent://\${window.location.href.replace("https://", "")}#Intent;scheme=https;package=com.android.chrome;end;\`;
     setTimeout(() => {
       if (window.history.length > 1) {
