@@ -39,7 +39,7 @@ export const POOL_ADDRESSES: Record<string, string> = {
   optimism: "0x6d5d44da188169d2449f7d55f2780bd746bf387f",
 };
 
-// 체인 정보
+// 체인 정보 (Chains 테이블 + Tokens 테이블 조인 형태)
 export const CHAINS = {
   bsc: {
     id: "bsc",
@@ -48,10 +48,9 @@ export const CHAINS = {
     type: "evm",
     iconUrl: "/chains/bsc.svg",
     tokens: {
-      USDT: "0x55d398326f99059fF775485246999027B3197955",
-      USDC: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d"
-    },
-    decimals: 18
+      USDT: { address: "0x55d398326f99059fF775485246999027B3197955", decimals: 18 },
+      USDC: { address: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d", decimals: 18 }
+    }
   },
   solana: {
     id: "solana",
@@ -60,10 +59,9 @@ export const CHAINS = {
     type: "svm",
     iconUrl: "/chains/solana.svg",
     tokens: {
-      USDT: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
-      USDC: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
-    },
-    decimals: 6
+      USDT: { address: "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB", decimals: 6 },
+      USDC: { address: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", decimals: 6 }
+    }
   },
   base: {
     id: "base",
@@ -72,10 +70,9 @@ export const CHAINS = {
     type: "evm",
     iconUrl: "/chains/base.png",
     tokens: {
-      USDT: "0xfde4C96c8593536E31F229EA8f37b2ADa2699bb2",
-      USDC: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
-    },
-    decimals: 6
+      USDT: { address: "0xfde4C96c8593536E31F229EA8f37b2ADa2699bb2", decimals: 6 },
+      USDC: { address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913", decimals: 6 }
+    }
   },
   avalanche: {
     id: "avalanche",
@@ -84,10 +81,9 @@ export const CHAINS = {
     type: "evm",
     iconUrl: "/chains/avalanche.svg",
     tokens: {
-      USDT: "0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7",
-      USDC: "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E"
-    },
-    decimals: 6
+      USDT: { address: "0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7", decimals: 6 },
+      USDC: { address: "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E", decimals: 6 }
+    }
   },
   arbitrum: {
     id: "arbitrum",
@@ -96,10 +92,9 @@ export const CHAINS = {
     type: "evm",
     iconUrl: "/chains/arbitrum.svg",
     tokens: {
-      USDT: "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9",
-      USDC: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831"
-    },
-    decimals: 6
+      USDT: { address: "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9", decimals: 6 },
+      USDC: { address: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831", decimals: 6 }
+    }
   },
   optimism: {
     id: "optimism",
@@ -108,10 +103,9 @@ export const CHAINS = {
     type: "evm",
     iconUrl: "/chains/optimism.svg",
     tokens: {
-      USDT: "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58",
-      USDC: "0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85"
-    },
-    decimals: 6
+      USDT: { address: "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58", decimals: 6 },
+      USDC: { address: "0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85", decimals: 6 }
+    }
   }
 } as const;
 
@@ -179,23 +173,23 @@ export function generateWalletDeeplink(
   memo?: string
 ): string {
   const chainInfo = CHAINS[chain];
-  const tokenAddress = chainInfo.tokens[token];
+  const tokenInfo = chainInfo.tokens[token];
   const amountInSmallestUnit = BigInt(
-    Math.floor(parseFloat(amount) * Math.pow(10, chainInfo.decimals))
+    Math.floor(parseFloat(amount) * Math.pow(10, tokenInfo.decimals))
   );
 
   switch (wallet) {
     case "metamask":
       // MetaMask Universal Link
       // https://metamask.app.link/send/{tokenAddress}@{chainId}/transfer?address={to}&uint256={amount}
-      return `https://metamask.app.link/send/${tokenAddress}@${chainInfo.chainId}/transfer?address=${recipient}&uint256=${amountInSmallestUnit}`;
+      return `https://metamask.app.link/send/${tokenInfo.address}@${chainInfo.chainId}/transfer?address=${recipient}&uint256=${amountInSmallestUnit}`;
 
     case "trust":
       // Trust Wallet Deeplink
       // https://link.trustwallet.com/send?asset=c{SLIP44}_t{token}&address={to}&amount={amount}&memo={memo}
       // Solana SLIP44 = 501
       const slip44 = chainInfo.type === "svm" ? 501 : (SLIP44_CODES[chain] || chainInfo.chainId);
-      let trustUrl = `https://link.trustwallet.com/send?asset=c${slip44}_t${tokenAddress}&address=${recipient}&amount=${amount}`;
+      let trustUrl = `https://link.trustwallet.com/send?asset=c${slip44}_t${tokenInfo.address}&address=${recipient}&amount=${amount}`;
       if (memo) {
         trustUrl += `&memo=${encodeURIComponent(memo)}`;
       }
@@ -207,7 +201,7 @@ export function generateWalletDeeplink(
       if (chainInfo.type !== "svm") {
         throw new Error("Phantom only supports Solana");
       }
-      let phantomUrl = `solana:${recipient}?amount=${amount}&spl-token=${tokenAddress}`;
+      let phantomUrl = `solana:${recipient}?amount=${amount}&spl-token=${tokenInfo.address}`;
       if (memo) {
         phantomUrl += `&memo=${encodeURIComponent(memo)}`;
       }
@@ -247,21 +241,21 @@ export function generatePaymentUri(
   memo?: string
 ): string {
   const chainInfo = CHAINS[chain];
-  const tokenAddress = chainInfo.tokens[token];
+  const tokenInfo = chainInfo.tokens[token];
   const amountInSmallestUnit = BigInt(
-    Math.floor(parseFloat(amount) * Math.pow(10, chainInfo.decimals))
+    Math.floor(parseFloat(amount) * Math.pow(10, tokenInfo.decimals))
   );
 
   if (chainInfo.type === "svm") {
     // Solana Pay
-    let uri = `solana:${recipient}?amount=${amount}&spl-token=${tokenAddress}`;
+    let uri = `solana:${recipient}?amount=${amount}&spl-token=${tokenInfo.address}`;
     if (memo) {
       uri += `&memo=${encodeURIComponent(memo)}`;
     }
     return uri;
   } else {
     // EIP-681
-    return `ethereum:${tokenAddress}@${chainInfo.chainId}/transfer?address=${recipient}&uint256=${amountInSmallestUnit}`;
+    return `ethereum:${tokenInfo.address}@${chainInfo.chainId}/transfer?address=${recipient}&uint256=${amountInSmallestUnit}`;
   }
 }
 
