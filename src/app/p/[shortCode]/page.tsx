@@ -85,13 +85,6 @@ export default function ProductDetailPage() {
 
       <div className="relative z-10 max-w-md mx-auto min-h-screen flex flex-col">
 
-        {/* Header / Nav */}
-        <header className="px-6 pt-6 pb-2 flex items-center justify-between">
-          <Link href="/" className="text-xl font-black tracking-tighter italic bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
-            Setto.
-          </Link>
-        </header>
-
         {/* Main Content Area */}
         <main className="flex-1 flex flex-col px-6 pt-2 pb-32">
 
@@ -107,9 +100,9 @@ export default function ProductDetailPage() {
           </ImageCarousel>
 
           {/* Description */}
-          <div className="space-y-6">
+          <div className="space-y-4">
             <div className="p-6 rounded-[1.5rem] bg-[#121214] border border-white/5 shadow-inner">
-              <h3 className="text-lg font-bold mb-3 text-white">About</h3>
+              <h3 className="text-lg font-bold mb-2 text-white">About</h3>
               <p className="text-gray-400 leading-relaxed text-sm">
                 {product.description}
               </p>
@@ -117,9 +110,8 @@ export default function ProductDetailPage() {
 
             {/* Detail Images */}
             {product.detail_urls.length > 0 && (
-              <div className="space-y-4">
-                <h3 className="text-lg font-bold text-white px-2">Details</h3>
-                <div className="space-y-4">
+              <div className="space-y-2">
+                <div className="space-y-2">
                   {product.detail_urls.map((url, idx) => (
                     <div key={idx} className="rounded-[1.5rem] overflow-hidden border border-white/5 bg-[#121214]">
                       <img
@@ -137,7 +129,7 @@ export default function ProductDetailPage() {
         </main>
 
         {/* Bottom Action Bar */}
-        <div className="fixed bottom-6 left-6 right-6 max-w-[calc(28rem-3rem)] mx-auto z-40">
+        <div className="fixed bottom-4 left-6 right-6 max-w-[calc(28rem-3rem)] mx-auto z-40">
           <div className="p-2 pl-6 pr-2 rounded-[1.5rem] bg-white/10 backdrop-blur-xl border border-white/10 shadow-2xl flex items-center justify-between">
             <div className="flex flex-col">
               <span className="text-xs text-gray-400 uppercase tracking-wide">Total Amount</span>

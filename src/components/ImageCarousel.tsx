@@ -30,7 +30,7 @@ export default function ImageCarousel({ images, productName, children }: ImageCa
   }, []);
 
   return (
-    <div className="relative w-full aspect-[4/5] rounded-[2rem] overflow-hidden shadow-2xl shadow-purple-900/20 group mb-8">
+    <div className="relative w-full aspect-[4/5] rounded-[2rem] overflow-hidden shadow-2xl shadow-purple-900/20 group mb-4">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/60 z-10 pointer-events-none" />
 
       {/* Scrollable Container */}
@@ -78,9 +78,8 @@ export default function ImageCarousel({ images, productName, children }: ImageCa
           {images.map((_, i) => (
             <div
               key={i}
-              className={`h-1 flex-1 rounded-full transition-all duration-300 backdrop-blur-sm ${
-                i === currentSlide ? "bg-white" : "bg-white/20"
-              }`}
+              className={`h-1 flex-1 rounded-full transition-all duration-300 backdrop-blur-sm ${i === currentSlide ? "bg-white" : "bg-white/20"
+                }`}
             />
           ))}
         </div>
